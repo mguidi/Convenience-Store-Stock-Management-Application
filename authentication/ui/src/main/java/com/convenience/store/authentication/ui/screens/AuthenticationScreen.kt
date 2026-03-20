@@ -44,6 +44,7 @@ fun AuthenticationScreen(modifier: Modifier = Modifier) {
 
     LaunchedEffect(uiState) {
         if (uiState is AuthenticationScreenState.Error) {
+            // TODO convert error to string resources
             snackbarHostState.showSnackbar(
                 message = (uiState as AuthenticationScreenState.Error).error.toString()
             )

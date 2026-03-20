@@ -7,12 +7,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationScreenState
 import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationViewModel
 import com.convenience.store.authentication.domain.entities.AuthenticationState
@@ -20,41 +25,61 @@ import com.convenience.store.authentication.ui.screens.AuthenticationScreen
 
 @Composable
 fun NavigationScreen() {
+    val backStack = remember { mutableStateListOf<Screens>(Screens.SplashScreen) }
     val viewModel = hiltViewModel<NavigationViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    // handle navigation base on the uiState
+    LaunchedEffect(uiState) {
         when (val state = uiState) {
-            is NavigationScreenState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            is NavigationScreenState.Success -> {
+                val targetScreen = when (state.authenticationState) {
+                    is AuthenticationState.Authenticated -> Screens.ProductListScreen
+                    is AuthenticationState.NotAuthenticated -> Screens.AuthenticationScreen
+                }
+
+                // replace splashScreen with the target screen
+                if (backStack.lastOrNull() != targetScreen) {
+                    backStack.clear()
+                    backStack.add(targetScreen)
+                }
             }
 
             is NavigationScreenState.Error -> {
-                Text(
-                    text = state.throwable.message ?: "Unknow error",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp)
-                )
+                // Opzionale: gestire lo stato di errore (es. rimanere su Splash con un messaggio)
             }
 
-            is NavigationScreenState.Success -> {
-                when (state.authenticationState) {
-                    is AuthenticationState.Authenticated ->
-                        // TODO
-                        Text(
-                            text = "Authenticated",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-
-
-                    is AuthenticationState.NotAuthenticated ->
-                        AuthenticationScreen()
-                }
-
+            is NavigationScreenState.Loading -> {
+                // Rimaniamo su SplashScreen
+                if (backStack.isEmpty()) backStack.add(Screens.SplashScreen)
             }
         }
     }
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryProvider = { key ->
+            when (key) {
+                is Screens.SplashScreen -> NavEntry(key) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+
+                is Screens.AuthenticationScreen -> NavEntry(key) {
+                    AuthenticationScreen()
+                }
+
+                is Screens.ProductListScreen -> NavEntry(key) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text("Product list Screen", modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+        }
+    )
+
+
 
 }

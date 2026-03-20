@@ -8,7 +8,6 @@
 - Products
 - Suppliers
 - Stocks 
-- Transactions
 - Dashboard
 
 ## Architecture Overview
