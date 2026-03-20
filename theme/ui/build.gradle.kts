@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.convenience.store.authentication.data"
+    namespace = "com.convenience.store.theme.ui"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -35,10 +34,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":authentication:domain"))
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(platform(libs.arrow.stack))
-    implementation(libs.arrow.core)
-
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+//    implementation(libs.androidx.compose.runtime)
+//    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.material3)
 }

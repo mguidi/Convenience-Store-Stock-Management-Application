@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="authentication_username">Username</string>
+    <string name="authentication_password">Password</string>
+    <string name="authentication_password_show">Toggle password visibility</string>
+    <string name="authentication_login">Login</string>
+
+</resources>
