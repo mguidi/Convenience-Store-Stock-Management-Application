@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":products:domain"))
+    implementation(project(":suppliers:domain"))
     implementation(project(":core:ui"))
 
     implementation(platform(libs.androidx.compose.bom))

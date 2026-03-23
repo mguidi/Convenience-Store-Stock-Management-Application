@@ -2,6 +2,7 @@ package com.convenience.store.authentication.ui.viewmodels
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.setTextAndSelectAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.convenience.store.authentication.domain.entities.AuthenticationError
@@ -54,6 +55,10 @@ class AuthenticationViewModel @Inject constructor(
     private fun clearFields() {
         usernameState.clearText()
         passwordState.clearText()
+
+        // TODO remove this default value
+        usernameState.setTextAndSelectAll("admin")
+        passwordState.setTextAndSelectAll("password")
     }
 
 }

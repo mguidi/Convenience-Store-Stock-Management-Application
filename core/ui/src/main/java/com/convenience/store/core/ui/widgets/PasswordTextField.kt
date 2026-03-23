@@ -1,4 +1,4 @@
-package com.convenience.store.authentication.ui.screens
+package com.convenience.store.core.ui.widgets
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,13 +24,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.convenience.store.authentication.ui.R
 
 @Composable
-fun PasswordTextField(state: TextFieldState) {
+fun PasswordTextField(
+    state: TextFieldState,
+    label: String,
+    contentDescription: String
+) {
     var showPassword by remember { mutableStateOf(false) }
 
     BasicSecureTextField(
@@ -57,7 +59,7 @@ fun PasswordTextField(state: TextFieldState) {
                 ) {
                     if (state.text.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.authentication_password),
+                            text = label,
                             color = Color.Gray
                         )
                     }
@@ -69,7 +71,7 @@ fun PasswordTextField(state: TextFieldState) {
                     } else {
                         Icons.Filled.VisibilityOff
                     },
-                    contentDescription = stringResource(R.string.authentication_password_show),
+                    contentDescription = contentDescription,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .requiredSize(48.dp)
@@ -84,5 +86,9 @@ fun PasswordTextField(state: TextFieldState) {
 @Preview(showBackground = true)
 @Composable
 fun PasswordTextFieldPreview() {
-    PasswordTextField(rememberTextFieldState())
+    PasswordTextField(
+        rememberTextFieldState(),
+        "Password",
+        "Toggle password visibility"
+    )
 }

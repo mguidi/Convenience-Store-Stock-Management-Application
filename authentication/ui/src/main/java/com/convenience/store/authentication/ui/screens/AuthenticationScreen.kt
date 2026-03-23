@@ -35,6 +35,7 @@ import com.convenience.store.authentication.ui.R
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationScreenState
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationViewModel
 import com.convenience.store.core.ui.theme.ConvenienceStoreAssessmentTheme
+import com.convenience.store.core.ui.widgets.PasswordTextField
 
 @Composable
 fun AuthenticationScreen(modifier: Modifier = Modifier) {
@@ -101,7 +102,9 @@ internal fun AuthenticationScreenInt(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 PasswordTextField(
-                    state = passwordState
+                    state = passwordState,
+                    label = stringResource(R.string.authentication_password),
+                    contentDescription = stringResource(R.string.authentication_password_show)
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))

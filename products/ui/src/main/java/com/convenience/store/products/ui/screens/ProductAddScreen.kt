@@ -39,8 +39,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.convenience.store.core.ui.widgets.GenericExposedDropdown
+import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.ui.viewmodels.ProductAddScreenState
 import com.convenience.store.products.ui.viewmodels.ProductAddViewModel
+import com.convenience.store.suppliers.domain.entities.Supplier
 import com.convenience.store.core.ui.R as coreR
 import com.convenience.store.products.ui.R as productsR
 
@@ -52,7 +55,17 @@ fun ProductAddScreen(
 ) {
     val viewModel = hiltViewModel<ProductAddViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val suppliers by viewModel.suppliers.collectAsStateWithLifecycle()
+    val selectedSupplier by viewModel.selectedSupplier.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val onBackClickClean = {
+        onBackClick()
+        viewModel.reset()
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.init()
@@ -61,14 +74,15 @@ fun ProductAddScreen(
     LaunchedEffect(uiState) {
         when (uiState) {
             is ProductAddScreenState.Success -> {
-                onBackClick()
+                onBackClickClean()
             }
+
             is ProductAddScreenState.Error -> {
-                // TODO convert error to string resources
                 snackbarHostState.showSnackbar(
                     message = (uiState as ProductAddScreenState.Error).error.toString()
                 )
             }
+
             else -> {}
         }
     }
@@ -80,14 +94,19 @@ fun ProductAddScreen(
         priceState = viewModel.priceState,
         barcodeState = viewModel.barcodeState,
         availableQuantityState = viewModel.availableQuantityState,
+        categories = categories,
+        selectedCategory = selectedCategory,
+        suppliers = suppliers,
+        selectedSupplier = selectedSupplier,
+        onCategorySelected = viewModel::onCategorySelected,
+        onSupplierSelected = viewModel::onSupplierSelected,
         snackbarHostState = snackbarHostState,
         isLoading = uiState is ProductAddScreenState.Loading,
-        onBackClick = onBackClick,
+        onBackClick = onBackClickClean,
         onSaveClick = {
             viewModel.save()
         }
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,18 +118,32 @@ internal fun ProductAddScreenInt(
     priceState: TextFieldState = rememberTextFieldState(),
     barcodeState: TextFieldState = rememberTextFieldState(),
     availableQuantityState: TextFieldState = rememberTextFieldState(),
+    categories: List<Category> = emptyList(),
+    selectedCategory: Category? = null,
+    suppliers: List<Supplier> = emptyList(),
+    selectedSupplier: Supplier? = null,
+    onCategorySelected: (Category) -> Unit = {},
+    onSupplierSelected: (Supplier) -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     isLoading: Boolean = false,
     onBackClick: () -> Unit = {},
     onSaveClick: () -> Unit = {}
 ) {
+
+    val isSaveEnabled = !isLoading &&
+            nameState.text.isNotBlank() &&
+            priceState.text.toString().toBigDecimalOrNull() != null &&
+            availableQuantityState.text.toString().toBigDecimalOrNull() != null &&
+            selectedCategory != null &&
+            selectedSupplier != null
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(productsR.string.products_add_product)) },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = onBackClick, enabled = !isLoading) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(coreR.string.core_action_back)
@@ -120,8 +153,7 @@ internal fun ProductAddScreenInt(
                 actions = {
                     IconButton(
                         onClick = onSaveClick,
-                        enabled = !isLoading && nameState.text.isNotBlank() && priceState.text.toString()
-                            .toBigDecimalOrNull() != null
+                        enabled = isSaveEnabled
                     ) {
                         Icon(
                             Icons.Default.Check,
@@ -178,6 +210,28 @@ internal fun ProductAddScreenInt(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            GenericExposedDropdown(
+                label = stringResource(productsR.string.products_cateogry),
+                items = categories,
+                selectedItem = selectedCategory,
+                itemLabel = { it.name },
+                onItemSelected = onCategorySelected,
+                enabled = !isLoading
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            GenericExposedDropdown(
+                label = stringResource(productsR.string.products_supplier),
+                items = suppliers,
+                selectedItem = selectedSupplier,
+                itemLabel = { it.name },
+                onItemSelected = onSupplierSelected,
+                enabled = !isLoading
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
                 state = availableQuantityState,
                 label = { Text(stringResource(productsR.string.products_initial_quantity)) },
@@ -191,8 +245,7 @@ internal fun ProductAddScreenInt(
             Button(
                 onClick = onSaveClick,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading && nameState.text.isNotBlank() && priceState.text.toString()
-                    .toBigDecimalOrNull() != null
+                enabled = isSaveEnabled
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -206,6 +259,7 @@ internal fun ProductAddScreenInt(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

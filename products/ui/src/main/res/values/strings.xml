@@ -5,5 +5,7 @@
     <string name="products_description">Description</string>
     <string name="products_price">Price</string>
     <string name="products_barcode">Barcode</string>
+    <string name="products_cateogry">Category</string>
+    <string name="products_supplier">Supplier</string>
     <string name="products_initial_quantity">Initial Quantity</string>
 </resources>
