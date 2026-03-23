@@ -42,10 +42,23 @@ android {
 }
 
 dependencies {
-    implementation(project(":theme:ui"))
-    implementation(project(":authentication:ui"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+    implementation(project(":core:ui"))
+
     implementation(project(":authentication:domain"))
     implementation(project(":authentication:data"))
+    implementation(project(":authentication:ui"))
+
+    implementation(project(":stocks:domain"))
+    implementation(project(":stocks:data"))
+    implementation(project(":stocks:ui"))
+
+    implementation(project(":products:domain"))
+    implementation(project(":products:data"))
+    implementation(project(":products:ui"))
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -54,6 +67,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.icons.extended)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
@@ -62,6 +76,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    ksp(libs.androidx.room.compiler.ksp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

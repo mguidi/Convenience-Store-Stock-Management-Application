@@ -2,10 +2,7 @@ package com.convenience.store.assessment.navigation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,7 +10,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavEntry
@@ -22,6 +18,8 @@ import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationScree
 import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationViewModel
 import com.convenience.store.authentication.domain.entities.AuthenticationState
 import com.convenience.store.authentication.ui.screens.AuthenticationScreen
+import com.convenience.store.products.ui.screens.ProductAddScreen
+import com.convenience.store.products.ui.screens.ProductsScreen
 
 @Composable
 fun NavigationScreen() {
@@ -34,7 +32,7 @@ fun NavigationScreen() {
         when (val state = uiState) {
             is NavigationScreenState.Success -> {
                 val targetScreen = when (state.authenticationState) {
-                    is AuthenticationState.Authenticated -> Screens.ProductListScreen
+                    is AuthenticationState.Authenticated -> Screens.ProductsScreen
                     is AuthenticationState.NotAuthenticated -> Screens.AuthenticationScreen
                 }
 
@@ -46,11 +44,10 @@ fun NavigationScreen() {
             }
 
             is NavigationScreenState.Error -> {
-                // Opzionale: gestire lo stato di errore (es. rimanere su Splash con un messaggio)
+                // TODO: handle error
             }
 
             is NavigationScreenState.Loading -> {
-                // Rimaniamo su SplashScreen
                 if (backStack.isEmpty()) backStack.add(Screens.SplashScreen)
             }
         }
@@ -71,15 +68,24 @@ fun NavigationScreen() {
                     AuthenticationScreen()
                 }
 
-                is Screens.ProductListScreen -> NavEntry(key) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text("Product list Screen", modifier = Modifier.align(Alignment.Center))
+                is Screens.ProductsScreen -> NavEntry(key) {
+                    MainScreen(backStack) { onMenuClick ->
+                        ProductsScreen(
+                            onMenuClick = onMenuClick,
+                            onAddClick = { backStack.add(Screens.ProductAddScreen) }
+                        )
+                    }
+                }
+
+                is Screens.ProductAddScreen -> NavEntry(key) {
+                    MainScreen(backStack) { _ ->
+                        ProductAddScreen(
+                            onBackClick = { backStack.removeAt(backStack.size - 1) },
+                        )
                     }
                 }
             }
         }
     )
-
-
 
 }

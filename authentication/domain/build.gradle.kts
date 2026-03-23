@@ -33,8 +33,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.arrow.stack))
-    implementation(libs.arrow.core)
-
+    api(project(":core:domain"))
 }

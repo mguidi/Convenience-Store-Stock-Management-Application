@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_nav_menu">Menu</string>
+    <string name="core_action_search">Search</string>
+    <string name="core_action_add">Add</string>
+    <string name="core_action_save">Add</string>
+    <string name="core_action_back">Back</string>
+</resources>

@@ -33,15 +33,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
-    implementation(project(":theme:ui"))
     implementation(project(":authentication:domain"))
-
-    implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.arrow.stack))
-    implementation(libs.arrow.core)
+    implementation(project(":core:ui"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -49,7 +48,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.icons.extended)
-
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

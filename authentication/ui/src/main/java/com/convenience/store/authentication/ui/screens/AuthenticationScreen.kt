@@ -34,13 +34,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.convenience.store.authentication.ui.R
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationScreenState
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationViewModel
-import com.convenience.store.theme.ui.ConvenienceStoreAssessmentTheme
+import com.convenience.store.core.ui.theme.ConvenienceStoreAssessmentTheme
 
 @Composable
 fun AuthenticationScreen(modifier: Modifier = Modifier) {
     val viewModel = hiltViewModel<AuthenticationViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.init()
+    }
 
     LaunchedEffect(uiState) {
         if (uiState is AuthenticationScreenState.Error) {
@@ -51,17 +55,13 @@ fun AuthenticationScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = modifier.fillMaxSize()
-    ) { paddingValues ->
-        AuthenticationScreenInt(
-            modifier = Modifier.padding(paddingValues),
-            usernameState = viewModel.usernameState,
-            passwordState = viewModel.passwordState,
-            isLoading = uiState is AuthenticationScreenState.Loading,
-            onLoginClick = { viewModel.authenticate() })
-    }
+    AuthenticationScreenInt(
+        modifier = modifier,
+        usernameState = viewModel.usernameState,
+        passwordState = viewModel.passwordState,
+        snackbarHostState = snackbarHostState,
+        isLoading = uiState is AuthenticationScreenState.Loading,
+        onLoginClick = { viewModel.authenticate() })
 }
 
 @Composable
@@ -69,50 +69,58 @@ internal fun AuthenticationScreenInt(
     modifier: Modifier = Modifier,
     usernameState: TextFieldState = rememberTextFieldState(),
     passwordState: TextFieldState = rememberTextFieldState(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     isLoading: Boolean = false,
     onLoginClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = modifier.fillMaxSize()
+    ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .widthIn(max = 480.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            OutlinedTextField(
-                state = usernameState,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.authentication_username)) }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            PasswordTextField(
-                state = passwordState
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = onLoginClick,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                enabled = !isLoading
-
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 480.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                } else {
-                    Text(stringResource(R.string.authentication_login))
+                OutlinedTextField(
+                    state = usernameState,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.authentication_username)) }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                PasswordTextField(
+                    state = passwordState
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = !isLoading
+
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        Text(stringResource(R.string.authentication_login))
+                    }
                 }
             }
         }
