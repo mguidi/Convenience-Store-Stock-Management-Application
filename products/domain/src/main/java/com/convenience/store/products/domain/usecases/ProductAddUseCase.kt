@@ -7,11 +7,10 @@ import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
 import java.math.BigDecimal
 import java.util.UUID
-import javax.inject.Inject
 
 interface ProductAddUseCase {
 
-    suspend fun newProduct(
+    suspend fun invoke(
         name: String,
         description: String,
         price: BigDecimal,
@@ -23,12 +22,12 @@ interface ProductAddUseCase {
 
 }
 
-class ProductAddUseCaseImpl @Inject constructor(
+class ProductAddUseCaseImpl(
     private val uuidService: UuidService,
     private val productRepository: ProductRepository
 ) : ProductAddUseCase {
 
-    override suspend fun newProduct(
+    override suspend fun invoke(
         name: String,
         description: String,
         price: BigDecimal,

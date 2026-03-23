@@ -79,7 +79,7 @@ class ProductAddViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = ProductAddScreenState.Loading
-            val result = productAddUseCase.newProduct(
+            val result = productAddUseCase.invoke(
                 name,
                 description,
                 price,

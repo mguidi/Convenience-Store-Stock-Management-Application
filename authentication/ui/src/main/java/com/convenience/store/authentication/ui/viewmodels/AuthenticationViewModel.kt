@@ -6,7 +6,7 @@ import androidx.compose.foundation.text.input.setTextAndSelectAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.convenience.store.authentication.domain.entities.AuthenticationError
-import com.convenience.store.authentication.domain.repositories.AuthenticationRepository
+import com.convenience.store.authentication.domain.usecases.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    private val authenticationRepository: AuthenticationRepository,
+    private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
     val usernameState = TextFieldState()
@@ -32,7 +32,7 @@ class AuthenticationViewModel @Inject constructor(
             _uiState.value = AuthenticationScreenState.Loading
             val username = usernameState.text.toString()
             val password = passwordState.text.toString()
-            val loginResult = authenticationRepository.login(username, password)
+            val loginResult = loginUseCase.invoke(username, password)
             loginResult.fold(
                 ifLeft = {
                     _uiState.value = AuthenticationScreenState.Error(it)

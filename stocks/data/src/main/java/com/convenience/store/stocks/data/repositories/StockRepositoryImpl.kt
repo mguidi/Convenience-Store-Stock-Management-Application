@@ -24,8 +24,6 @@ class StockRepositoryImpl @Inject constructor(
         productId: UUID,
         quantity: BigDecimal
     ): Either<StockError, Unit> {
-        if (quantity < BigDecimal.ZERO) return Either.Left(StockError.InvalidQuantity)
-
         database
             .withTransaction {
                 stockEntityDao.updateStock(productId, quantity)
@@ -44,8 +42,6 @@ class StockRepositoryImpl @Inject constructor(
         productId: UUID,
         quantity: BigDecimal
     ): Either<StockError, Unit> {
-        if (quantity < BigDecimal.ZERO) return Either.Left(StockError.InvalidQuantity)
-
         database
             .withTransaction {
                 stockEntityDao.updateStock(productId, quantity.negate())

@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -37,6 +35,4 @@ android {
 dependencies {
     api(project(":core:domain"))
     api(libs.androidx.paging.common)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 }
