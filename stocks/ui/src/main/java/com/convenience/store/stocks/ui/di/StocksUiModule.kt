@@ -1,6 +1,7 @@
 package com.convenience.store.stocks.ui.di
 
 import com.convenience.store.stocks.domain.repositories.StockRepository
+import com.convenience.store.stocks.domain.services.StockSyncService
 import com.convenience.store.stocks.domain.usecases.StockAddUseCase
 import com.convenience.store.stocks.domain.usecases.StockAddUseCaseImpl
 import com.convenience.store.stocks.domain.usecases.StockGetByIdUseCase
@@ -20,17 +21,19 @@ object StocksUiModule {
     @Provides
     @Singleton
     fun provideStockAddUseCase(
-        stockRepository: StockRepository
+        stockRepository: StockRepository,
+        stockSyncService: StockSyncService
     ): StockAddUseCase {
-        return StockAddUseCaseImpl(stockRepository)
+        return StockAddUseCaseImpl(stockRepository, stockSyncService)
     }
 
     @Provides
     @Singleton
     fun provideStockRemoveUseCase(
-        stockRepository: StockRepository
+        stockRepository: StockRepository,
+        stockSyncService: StockSyncService
     ): StockRemoveUseCase {
-        return StockRemoveUseCaseImpl(stockRepository)
+        return StockRemoveUseCaseImpl(stockRepository, stockSyncService)
     }
 
     @Provides

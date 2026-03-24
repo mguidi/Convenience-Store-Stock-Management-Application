@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.repositories.StockRepository
+import com.convenience.store.stocks.domain.services.StockSyncService
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -12,7 +13,8 @@ interface StockRemoveUseCase {
 }
 
 class StockRemoveUseCaseImpl(
-    private val stockRepository: StockRepository
+    private val stockRepository: StockRepository,
+    private val stockSyncService: StockSyncService
 ) : StockRemoveUseCase {
 
 
@@ -22,6 +24,8 @@ class StockRemoveUseCaseImpl(
     ): Either<StockError, Unit> {
         if (quantity < BigDecimal.ZERO) return StockError.ValidationError.InvalidQuantity.left()
 
-        return stockRepository.removeStock(productId, quantity)
+        return stockRepository.removeStock(productId, quantity).onRight {
+            stockSyncService.scheduleSync()
+        }
     }
 }

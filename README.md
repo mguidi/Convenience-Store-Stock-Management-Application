@@ -49,7 +49,7 @@
 Application is organized in modules, each feature has its own set of modules. 
 The project follows **Clean Architecture** principles, separating concerns into three layers per feature:
 - **:domain**: Contains entities, repository interfaces, and use cases. Pure Kotlin module.
-- **:data**: Implementation of repositories, data sources (Room/Retrofit), and models.
+- **:data**: Implementation of repositories, data sources (Room/Ktor), and models.
 - **:ui**: Jetpack Compose screens, ViewModels, and UI-specific components.
 
 ## Best practices
