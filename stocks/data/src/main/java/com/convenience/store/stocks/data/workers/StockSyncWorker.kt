@@ -86,8 +86,10 @@ class StockSyncWorker @AssistedInject constructor(
             }
         }
 
-        sharedPref.edit(commit = true) {
-            putString(LAST_PROCESSED_ID_KEY, events.last().id.toString())
+        if (events.isNotEmpty()) {
+            sharedPref.edit(commit = true) {
+                putString(LAST_PROCESSED_ID_KEY, events.last().id.toString())
+            }
         }
 
         return if (allSuccess) Result.success() else Result.retry()
