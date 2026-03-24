@@ -10,14 +10,14 @@ import java.util.UUID
 
 interface ProductAddUseCase {
 
-    suspend fun invoke(
+    suspend operator fun invoke(
         name: String,
         description: String,
         price: BigDecimal,
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-    ): Either<ProductError, Unit>
+    ): Either<List<ProductError>, Unit>
 
 }
 
@@ -26,16 +26,25 @@ class ProductAddUseCaseImpl(
     private val productRepository: ProductRepository
 ) : ProductAddUseCase {
 
-    override suspend fun invoke(
+    override suspend operator fun invoke(
         name: String,
         description: String,
         price: BigDecimal,
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-    ): Either<ProductError, Unit> {
+    ): Either<List<ProductError>, Unit> {
 
-        // TODO check if fields are valid
+        val errors = mutableListOf<ProductError>()
+
+        if (name.isBlank()) errors += ProductError.ValidationError.InvalidName
+        if (description.isBlank()) errors += ProductError.ValidationError.InvalidDescription
+        if (price < BigDecimal.ZERO) errors += ProductError.ValidationError.InvalidPrice
+        if (barcode.isBlank()) errors += ProductError.ValidationError.InvalidBarcode
+        if (false /* TODO check if categoryId exits*/) errors += ProductError.ValidationError.InvalidCategory
+        if (false /* TODO check if supplierId exits*/) errors += ProductError.ValidationError.InvalidSupplier
+
+        if (errors.isNotEmpty()) return Either.Left(errors)
 
         val product = Product(
             id = uuidService.createSortableUuid(),
@@ -47,6 +56,6 @@ class ProductAddUseCaseImpl(
             supplierId = supplierId,
         )
 
-        return productRepository.insert(product)
+        return productRepository.insert(product).mapLeft { listOf(it) }
     }
 }

@@ -1,5 +1,6 @@
 package com.convenience.store.products.data.repositories
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -7,36 +8,32 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
-import com.convenience.store.core.data.datasources.EventLogEntityDao
-import com.convenience.store.core.data.models.EventLogEntity
+import com.convenience.store.core.data.datasources.EventLogDao
+import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductAddEvent
-import com.convenience.store.core.domain.events.StockAddEvent
-import com.convenience.store.products.data.datasources.ProductEntityDao
+import com.convenience.store.products.data.datasources.ProductDao
 import com.convenience.store.products.data.models.toDomain
-import com.convenience.store.products.data.models.toEntity
+import com.convenience.store.products.data.models.toDto
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.math.BigDecimal
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.String
 
 class ProductRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
-    private val eventLogEntityDao: EventLogEntityDao,
-    private val productEntityDao: ProductEntityDao
+    private val eventLogEntityDao: EventLogDao,
+    private val productEntityDao: ProductDao
 ) : ProductRepository {
 
-    override suspend fun insert(product: Product): Either<ProductError, Unit> {
-        database.withTransaction {
-            productEntityDao.insertOrUpdateProduct(product.toEntity())
-            val event = EventLogEntity(
-                type = ProductAddEvent.NAME,
-                dataId = product.id,
-                payload = ProductAddEvent(
+    override suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit> {
+        return try {
+            database.withTransaction {
+                productEntityDao.insert(product.toDto())
+                val eventPayload = ProductAddEvent(
                     product.id,
                     product.name,
                     product.description,
@@ -44,12 +41,23 @@ class ProductRepositoryImpl @Inject constructor(
                     product.barcode,
                     product.categoryId,
                     product.supplierId,
-                ).toString() // TODO to json
-            )
-            eventLogEntityDao.insertEvent(event)
-        }
+                )
+                val event = EventLogDto(
+                    type = ProductAddEvent.NAME,
+                    dataId = product.id,
+                    payload = Json.encodeToString(eventPayload.toDto())
+                )
+                eventLogEntityDao.insert(event)
+            }
+            Either.Right(Unit)
 
-        return Either.Right(Unit) // TODO handle errors
+        } catch (e: android.database.sqlite.SQLiteConstraintException) {
+            Log.w("ProductRepository", "Product already exists", e)
+            Either.Left(ProductError.RepositoryError.AlreadyExists)
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Generic error", e)
+            Either.Left(ProductError.RepositoryError.DatabaseError)
+        }
     }
 
     override fun getProductById(productId: UUID): Flow<Product?> {

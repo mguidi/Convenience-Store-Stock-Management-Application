@@ -19,7 +19,7 @@ class StockRemoveUseCaseImpl(
         productId: UUID,
         quantity: BigDecimal
     ): Either<StockError, Unit> {
-        if (quantity < BigDecimal.ZERO) return Either.Left(StockError.InvalidQuantity)
+        if (quantity < BigDecimal.ZERO) return Either.Left(StockError.ValidationError.InvalidQuantity)
 
         return stockRepository.removeStock(productId, quantity)
     }

@@ -1,13 +1,17 @@
 package com.convenience.store.products.data.models
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.convenience.store.products.domain.entities.Product
 import java.math.BigDecimal
 import java.util.UUID
 
-@Entity(tableName = "products")
-data class ProductEntity(
+@Entity(
+    tableName = "products",
+    indices = [Index(value = ["barcode"], unique = true)]
+)
+data class ProductDto(
     @PrimaryKey val id: UUID,
     val name: String,
     val description: String,
@@ -18,7 +22,7 @@ data class ProductEntity(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-fun ProductEntity.toDomain() = Product(
+fun ProductDto.toDomain() = Product(
     id = this.id,
     name = this.name,
     description = this.description,
@@ -28,7 +32,7 @@ fun ProductEntity.toDomain() = Product(
     supplierId = this.supplierId,
 )
 
-fun Product.toEntity() = ProductEntity(
+fun Product.toDto() = ProductDto(
     id = this.id,
     name = this.name,
     description = this.description,

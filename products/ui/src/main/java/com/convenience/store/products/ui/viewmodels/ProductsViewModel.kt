@@ -19,9 +19,8 @@ class ProductsViewModel @Inject constructor(
     productsGetUseCase: ProductsGetUseCase
 ) : ViewModel() {
 
-    val products: Flow<PagingData<Product>> = productsGetUseCase.invoke()
-        .cachedIn(viewModelScope)
+    val products: Flow<PagingData<Product>> = productsGetUseCase().cachedIn(viewModelScope)
 
-    fun getStockById(productId: UUID): Flow<Stock?> = stockGetByIdUseCase.invoke(productId)
+    fun getStockById(productId: UUID): Flow<Stock?> = stockGetByIdUseCase(productId)
 
 }

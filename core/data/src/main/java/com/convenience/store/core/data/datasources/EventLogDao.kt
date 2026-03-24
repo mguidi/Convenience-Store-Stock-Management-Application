@@ -3,7 +3,7 @@ package com.convenience.store.core.data.datasources
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.convenience.store.core.data.models.EventLogEntity
+import com.convenience.store.core.data.models.EventLogDto
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
  * This interface defines the methods for interacting with the stored event logs.
  */
 @Dao
-interface EventLogEntityDao {
+interface EventLogDao {
 
     /**
      * Inserts a new event log entry into the database.
@@ -19,7 +19,7 @@ interface EventLogEntityDao {
      * @param event The event entity to be saved.
      */
     @Insert
-    suspend fun insertEvent(event: EventLogEntity)
+    suspend fun insert(event: EventLogDto)
 
     /**
      * Retrieves a reactive stream of events that have occurred after a given ID.
@@ -29,7 +29,7 @@ interface EventLogEntityDao {
      * @return A Flow emitting lists of pending EventLogEntity entries.
      */
     @Query("SELECT * FROM event_log WHERE id > :lastProcessedId ORDER BY id ASC")
-    fun getEventsAfter(lastProcessedId: Long): Flow<List<EventLogEntity>>
+    fun getEventsAfter(lastProcessedId: Long): Flow<List<EventLogDto>>
 
     /**
      * Deletes events from the log that have already been processed up to a specified ID.

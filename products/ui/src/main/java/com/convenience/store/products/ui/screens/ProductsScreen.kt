@@ -24,37 +24,36 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.window.core.layout.WindowSizeClass
-import com.convenience.store.products.ui.R
-import com.convenience.store.core.ui.R as coreR
 import com.convenience.store.products.domain.entities.Product
+import com.convenience.store.products.ui.R
 import com.convenience.store.products.ui.viewmodels.ProductsViewModel
 import kotlinx.coroutines.flow.flowOf
 import java.math.BigDecimal
 import java.util.UUID
+import com.convenience.store.core.ui.R as coreR
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsScreen(
-    modifier: Modifier = Modifier,
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
+    onProductClick: (Product) -> Unit
 ) {
     val viewModel: ProductsViewModel = hiltViewModel<ProductsViewModel>()
     val pagingItems = viewModel.products.collectAsLazyPagingItems()
 
-    ProductsScreenInt(modifier, pagingItems, onMenuClick, onAddClick)
+    ProductsScreenInt(pagingItems, onMenuClick, onAddClick, {}, onProductClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductsScreenInt(
-    modifier: Modifier = Modifier,
     pagingItems: LazyPagingItems<Product>,
-    onMenuClick: () -> Unit = {},
-    onAddClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {},
-    onProductClick: (Product) -> Unit = {}
+    onMenuClick: () -> Unit,
+    onAddClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onProductClick: (Product) -> Unit
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val showGrid =
@@ -88,8 +87,6 @@ internal fun ProductsScreenInt(
                 },
             )
         },
-
-        modifier = modifier.fillMaxSize()
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -118,6 +115,10 @@ fun ProductsScreenCompactPreview() {
     MaterialTheme {
         ProductsScreenInt(
             pagingItems = pagingItems,
+            onMenuClick = {},
+            onAddClick = {},
+            onSearchClick = {},
+            onProductClick = {}
         )
     }
 }
@@ -129,6 +130,10 @@ fun ProductsScreenExpandedPreview() {
     MaterialTheme {
         ProductsScreenInt(
             pagingItems = pagingItems,
+            onMenuClick = {},
+            onAddClick = {},
+            onSearchClick = {},
+            onProductClick = {}
         )
     }
 }

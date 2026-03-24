@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.convenience.store.core.ui.widgets.GenericExposedDropdown
 import com.convenience.store.products.domain.entities.Category
+import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.ui.viewmodels.ProductAddScreenState
 import com.convenience.store.products.ui.viewmodels.ProductAddViewModel
 import com.convenience.store.suppliers.domain.entities.Supplier
@@ -50,7 +52,6 @@ import com.convenience.store.products.ui.R as productsR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductAddScreen(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 ) {
     val viewModel = hiltViewModel<ProductAddViewModel>()
@@ -60,6 +61,7 @@ fun ProductAddScreen(
     val suppliers by viewModel.suppliers.collectAsStateWithLifecycle()
     val selectedSupplier by viewModel.selectedSupplier.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalResources.current
 
     val onBackClickClean = {
         onBackClick()
@@ -72,15 +74,39 @@ fun ProductAddScreen(
     }
 
     LaunchedEffect(uiState) {
-        when (uiState) {
+        when (val state = uiState) {
             is ProductAddScreenState.Success -> {
                 onBackClickClean()
             }
 
             is ProductAddScreenState.Error -> {
-                snackbarHostState.showSnackbar(
-                    message = (uiState as ProductAddScreenState.Error).error.toString()
-                )
+                val message = state.errors.joinToString("\n") { error ->
+                    when (error) {
+                        is ProductError.ValidationError.InvalidName -> context.getString(productsR.string.products_errors_invalid_name)
+                        is ProductError.ValidationError.InvalidDescription -> context.getString(
+                            productsR.string.products_errors_invalid_description
+                        )
+
+                        is ProductError.ValidationError.InvalidPrice -> context.getString(productsR.string.products_errors_invalid_price)
+                        is ProductError.ValidationError.InvalidBarcode -> context.getString(
+                            productsR.string.products_errors_invalid_barcode
+                        )
+
+                        is ProductError.ValidationError.InvalidCategory -> context.getString(
+                            productsR.string.products_errors_invalid_category
+                        )
+
+                        is ProductError.ValidationError.InvalidSupplier -> context.getString(
+                            productsR.string.products_errors_invalid_supplier
+                        )
+
+                        is ProductError.RepositoryError.AlreadyExists -> context.getString(productsR.string.products_errors_already_exists)
+                        is ProductError.RepositoryError.DatabaseError -> context.getString(coreR.string.core_database_error)
+                        is ProductError.RepositoryError.UnknownError -> context.getString(coreR.string.core_unknown_error)
+                    }
+                }
+
+                snackbarHostState.showSnackbar(message)
             }
 
             else -> {}
@@ -88,19 +114,18 @@ fun ProductAddScreen(
     }
 
     ProductAddScreenInt(
-        modifier = modifier,
         nameState = viewModel.nameState,
         descriptionState = viewModel.descriptionState,
         priceState = viewModel.priceState,
         barcodeState = viewModel.barcodeState,
+        snackbarHostState = snackbarHostState,
+        isLoading = uiState is ProductAddScreenState.Loading,
         categories = categories,
         selectedCategory = selectedCategory,
         suppliers = suppliers,
         selectedSupplier = selectedSupplier,
         onCategorySelected = viewModel::onCategorySelected,
         onSupplierSelected = viewModel::onSupplierSelected,
-        snackbarHostState = snackbarHostState,
-        isLoading = uiState is ProductAddScreenState.Loading,
         onBackClick = onBackClickClean,
         onSaveClick = {
             viewModel.save()
@@ -111,26 +136,27 @@ fun ProductAddScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductAddScreenInt(
-    modifier: Modifier = Modifier,
-    nameState: TextFieldState = rememberTextFieldState(),
-    descriptionState: TextFieldState = rememberTextFieldState(),
-    priceState: TextFieldState = rememberTextFieldState(),
-    barcodeState: TextFieldState = rememberTextFieldState(),
-    categories: List<Category> = emptyList(),
-    selectedCategory: Category? = null,
-    suppliers: List<Supplier> = emptyList(),
-    selectedSupplier: Supplier? = null,
-    onCategorySelected: (Category) -> Unit = {},
-    onSupplierSelected: (Supplier) -> Unit = {},
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    isLoading: Boolean = false,
-    onBackClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+    nameState: TextFieldState,
+    descriptionState: TextFieldState,
+    priceState: TextFieldState,
+    barcodeState: TextFieldState,
+    snackbarHostState: SnackbarHostState,
+    isLoading: Boolean,
+    categories: List<Category>,
+    selectedCategory: Category?,
+    suppliers: List<Supplier>,
+    selectedSupplier: Supplier?,
+    onCategorySelected: (Category) -> Unit,
+    onSupplierSelected: (Supplier) -> Unit,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit
 ) {
 
     val isSaveEnabled = !isLoading &&
             nameState.text.isNotBlank() &&
+            descriptionState.text.isNotBlank() &&
             priceState.text.toString().toBigDecimalOrNull() != null &&
+            barcodeState.text.isNotBlank() &&
             selectedCategory != null &&
             selectedSupplier != null
 
@@ -160,7 +186,6 @@ internal fun ProductAddScreenInt(
                 }
             )
         },
-        modifier = modifier.fillMaxSize()
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -253,6 +278,21 @@ internal fun ProductAddScreenInt(
 @Composable
 fun ProductAddScreenPreview() {
     MaterialTheme {
-        ProductAddScreenInt()
+        ProductAddScreenInt(
+            nameState = rememberTextFieldState(),
+            descriptionState = rememberTextFieldState(),
+            priceState = rememberTextFieldState(),
+            barcodeState = rememberTextFieldState(),
+            snackbarHostState = remember { SnackbarHostState() },
+            isLoading = false,
+            categories = emptyList(),
+            selectedCategory = null,
+            suppliers = emptyList(),
+            selectedSupplier = null,
+            onCategorySelected = {},
+            onSupplierSelected = {},
+            onBackClick = {},
+            onSaveClick = {}
+        )
     }
 }

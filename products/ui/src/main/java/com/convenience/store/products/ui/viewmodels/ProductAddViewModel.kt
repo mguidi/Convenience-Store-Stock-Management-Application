@@ -77,16 +77,7 @@ class ProductAddViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = ProductAddScreenState.Loading
-            val result = productAddUseCase.invoke(
-                name,
-                description,
-                price,
-                barcode,
-                categoryId,
-                supplierId,
-            )
-
-            result.fold(
+            productAddUseCase(name, description, price, barcode, categoryId, supplierId).fold(
                 ifLeft = {
                     _uiState.value = ProductAddScreenState.Error(it)
                 },
@@ -128,6 +119,6 @@ class ProductAddViewModel @Inject constructor(
 sealed interface ProductAddScreenState {
     data object Init : ProductAddScreenState
     data object Loading : ProductAddScreenState
-    data class Error(val error: ProductError) : ProductAddScreenState
+    data class Error(val errors: List<ProductError>) : ProductAddScreenState
     data object Success : ProductAddScreenState
 }

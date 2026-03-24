@@ -34,12 +34,11 @@ import com.convenience.store.core.ui.R as coreR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsGridScreen(
-    modifier: Modifier = Modifier,
     pagingItems: LazyPagingItems<Product>,
-    onProductClick: (Product) -> Unit = {}
+    onProductClick: (Product) -> Unit
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier.fillMaxSize(),
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -163,6 +162,7 @@ fun ProductsGridScreenPreview() {
     MaterialTheme {
         ProductsGridScreen(
             pagingItems = pagingItems,
+            onProductClick = {}
         )
     }
 }

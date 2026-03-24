@@ -5,11 +5,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.convenience.store.assessment.database.AppDatabase
-import com.convenience.store.core.data.datasources.EventLogEntityDao
-import com.convenience.store.products.data.datasources.ProductEntityDao
-import com.convenience.store.products.data.models.ProductEntity
-import com.convenience.store.stocks.data.datasources.StockEntityDao
-import com.convenience.store.stocks.data.models.StockEntity
+import com.convenience.store.core.data.datasources.EventLogDao
+import com.convenience.store.products.data.datasources.ProductDao
+import com.convenience.store.products.data.models.ProductDto
+import com.convenience.store.stocks.data.datasources.StockDao
+import com.convenience.store.stocks.data.models.StockDto
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,17 +28,17 @@ abstract class AppModule {
 
     companion object {
         @Provides
-        fun provideEventLogEntityDao(db: AppDatabase): EventLogEntityDao {
+        fun provideEventLogEntityDao(db: AppDatabase): EventLogDao {
             return db.eventLogEntityDao()
         }
 
         @Provides
-        fun provideStockEntityDao(db: AppDatabase): StockEntityDao {
+        fun provideStockEntityDao(db: AppDatabase): StockDao {
             return db.stockEntityDao()
         }
 
         @Provides
-        fun provideProductEntityDao(db: AppDatabase): ProductEntityDao {
+        fun provideProductEntityDao(db: AppDatabase): ProductDao {
             return db.productEntityDao()
         }
 
@@ -46,8 +46,8 @@ abstract class AppModule {
         @Provides
         fun provideAppDatabase(
             @ApplicationContext context: Context,
-            productEntityDaoProvider: javax.inject.Provider<ProductEntityDao>,
-            stockEntityDaoProvider: javax.inject.Provider<StockEntityDao>,
+            productEntityDaoProvider: javax.inject.Provider<ProductDao>,
+            stockEntityDaoProvider: javax.inject.Provider<StockDao>,
         ): AppDatabase {
             return Room.databaseBuilder(
                 context,
@@ -76,11 +76,11 @@ abstract class AppModule {
         }
 
         private suspend fun seedDatabase(
-            productEntityDao: ProductEntityDao,
-            stockEntityDao: StockEntityDao
+            productEntityDao: ProductDao,
+            stockEntityDao: StockDao
         ) {
             val initialProducts = listOf(
-                ProductEntity(
+                ProductDto(
                     id = UUID.fromString("019d1d3d-ed99-7be7-9e8c-d74fd0d83d97"),
                     name = "Organic Milk",
                     description = "Fresh organic whole milk from local farms. 1 Gallon.",
@@ -89,7 +89,7 @@ abstract class AppModule {
                     categoryId = UUID.randomUUID(),
                     supplierId = UUID.randomUUID(),
                 ),
-                ProductEntity(
+                ProductDto(
                     id = UUID.fromString("4f7edd9a-236a-4921-b720-dbe451646a0f"),
                     name = "Wheat Bread",
                     description = "Whole wheat sliced bread. No preservatives.",
@@ -103,11 +103,11 @@ abstract class AppModule {
 
 
             val initialStock = listOf(
-                StockEntity(
+                StockDto(
                     productId = UUID.fromString("019d1d3d-ed99-7be7-9e8c-d74fd0d83d97"),
                     quantity = BigDecimal("10")
                 ),
-                StockEntity(
+                StockDto(
                     productId = UUID.fromString("4f7edd9a-236a-4921-b720-dbe451646a0f"),
                     quantity = BigDecimal("12")
                 )

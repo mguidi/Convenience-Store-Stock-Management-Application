@@ -5,28 +5,31 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.convenience.store.products.data.models.ProductEntity
+import com.convenience.store.products.data.models.ProductDto
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 @Dao
-interface ProductEntityDao {
+interface ProductDao {
+
+    @Insert
+    suspend fun insert(product: ProductDto)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateProduct(productEntity: ProductEntity)
+    suspend fun insertOrUpdateProduct(product: ProductDto)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(products: List<ProductEntity>)
+    suspend fun insertAll(products: List<ProductDto>)
 
     @Query("SELECT * FROM products WHERE id = :productId")
-    fun getProductById(productId: UUID): Flow<ProductEntity?>
+    fun getProductById(productId: UUID): Flow<ProductDto?>
 
     @Query("SELECT * FROM products WHERE barcode = :barcode")
-    fun getProductByBarcode(barcode: String): Flow<ProductEntity?>
+    fun getProductByBarcode(barcode: String): Flow<ProductDto?>
 
     @Query("SELECT * FROM products WHERE categoryId = :categoryId")
-    fun getProductsByCategoryPaged(categoryId: UUID): PagingSource<Int, ProductEntity>
+    fun getProductsByCategoryPaged(categoryId: UUID): PagingSource<Int, ProductDto>
 
     @Query("SELECT * FROM products ORDER BY name ASC")
-    fun getProductsPaged(): PagingSource<Int, ProductEntity>
+    fun getProductsPaged(): PagingSource<Int, ProductDto>
 }

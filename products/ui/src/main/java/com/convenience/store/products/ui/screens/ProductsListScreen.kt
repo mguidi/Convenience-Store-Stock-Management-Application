@@ -22,23 +22,22 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.convenience.store.products.domain.entities.Product
+import com.convenience.store.products.ui.R
 import kotlinx.coroutines.flow.flowOf
 import java.math.BigDecimal
 import java.util.UUID
 import com.convenience.store.core.ui.R as coreR
-import com.convenience.store.products.ui.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsListScreen(
-    modifier: Modifier = Modifier,
     pagingItems: LazyPagingItems<Product>,
-    onProductClick: (Product) -> Unit = {}
+    onProductClick: (Product) -> Unit
 ) {
 
     Box(
-        modifier = modifier
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -152,6 +151,7 @@ fun ProductsListScreenPreview() {
     MaterialTheme {
         ProductsListScreen(
             pagingItems = pagingItems,
+            onProductClick = {}
         )
     }
 }

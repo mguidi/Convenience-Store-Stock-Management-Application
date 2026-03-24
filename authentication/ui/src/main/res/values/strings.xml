@@ -4,5 +4,7 @@
     <string name="authentication_password">Password</string>
     <string name="authentication_password_show">Toggle password visibility</string>
     <string name="authentication_login">Login</string>
+    <string name="authentication_errors_invalid_credential">Invalid credentials</string>
+    <string name="authentication_errors_expired_credential">Expired credentials</string>
 
 </resources>

@@ -26,38 +26,44 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.convenience.store.authentication.domain.entities.AuthenticationError
 import com.convenience.store.authentication.ui.R
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationScreenState
 import com.convenience.store.authentication.ui.viewmodels.AuthenticationViewModel
 import com.convenience.store.core.ui.theme.ConvenienceStoreAssessmentTheme
 import com.convenience.store.core.ui.widgets.PasswordTextField
+import com.convenience.store.core.ui.R as coreR
 
 @Composable
-fun AuthenticationScreen(modifier: Modifier = Modifier) {
+fun AuthenticationScreen() {
     val viewModel = hiltViewModel<AuthenticationViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalResources.current
 
     LaunchedEffect(Unit) {
         viewModel.init()
     }
 
     LaunchedEffect(uiState) {
-        if (uiState is AuthenticationScreenState.Error) {
-            // TODO convert error to string resources
-            snackbarHostState.showSnackbar(
-                message = (uiState as AuthenticationScreenState.Error).error.toString()
-            )
+        val state = uiState
+        if (state is AuthenticationScreenState.Error) {
+            val message = when (state.error) {
+                is AuthenticationError.InvalidCredential -> context.getString(R.string.authentication_errors_invalid_credential)
+                is AuthenticationError.ExpiredCredential -> context.getString(R.string.authentication_errors_expired_credential)
+                is AuthenticationError.Unknown -> context.getString(coreR.string.core_unknown_error)
+            }
+            snackbarHostState.showSnackbar(message)
         }
     }
 
     AuthenticationScreenInt(
-        modifier = modifier,
         usernameState = viewModel.usernameState,
         passwordState = viewModel.passwordState,
         snackbarHostState = snackbarHostState,
@@ -67,20 +73,18 @@ fun AuthenticationScreen(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun AuthenticationScreenInt(
-    modifier: Modifier = Modifier,
-    usernameState: TextFieldState = rememberTextFieldState(),
-    passwordState: TextFieldState = rememberTextFieldState(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    isLoading: Boolean = false,
-    onLoginClick: () -> Unit = {}
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
+    snackbarHostState: SnackbarHostState,
+    isLoading: Boolean,
+    onLoginClick: () -> Unit
 ) {
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = modifier.fillMaxSize()
     ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
@@ -136,7 +140,11 @@ internal fun AuthenticationScreenInt(
 fun AuthenticationScreenPreview() {
     ConvenienceStoreAssessmentTheme {
         AuthenticationScreenInt(
-
+            usernameState = rememberTextFieldState(),
+            passwordState = rememberTextFieldState(),
+            snackbarHostState = remember { SnackbarHostState() },
+            isLoading = false,
+            onLoginClick = {}
         )
     }
 }

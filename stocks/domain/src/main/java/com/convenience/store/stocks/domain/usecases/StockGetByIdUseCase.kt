@@ -7,7 +7,7 @@ import java.util.UUID
 
 interface StockGetByIdUseCase {
 
-    fun invoke(productId: UUID): Flow<Stock?>
+    operator fun invoke(productId: UUID): Flow<Stock?>
 
 }
 

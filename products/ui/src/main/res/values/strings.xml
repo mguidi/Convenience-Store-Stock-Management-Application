@@ -13,5 +13,11 @@
     <string name="products_quantity_colon">Quantity: %1$s</string>
     <string name="products_currency_dollar">$%1$s</string>
     <string name="products_no_products_found">No products found</string>
-
+    <string name="products_errors_invalid_name">Name cannot be empty</string>
+    <string name="products_errors_invalid_description">Description cannot be empty</string>
+    <string name="products_errors_invalid_price">Price cannot be negative</string>
+    <string name="products_errors_invalid_barcode">Barcode cannot be empty</string>
+    <string name="products_errors_invalid_category">Category cannot be empty</string>
+    <string name="products_errors_invalid_supplier">Supplier cannot be empty</string>
+    <string name="products_errors_already_exists">Product already exists</string>
 </resources>

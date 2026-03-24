@@ -3,25 +3,28 @@ package com.convenience.store.stocks.data.repositories
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
-import com.convenience.store.core.data.datasources.EventLogEntityDao
-import com.convenience.store.core.data.models.EventLogEntity
+import com.convenience.store.core.data.datasources.EventLogDao
+import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.StockAddEvent
 import com.convenience.store.core.domain.events.StockRemoveEvent
-import com.convenience.store.stocks.data.datasources.StockEntityDao
+import com.convenience.store.stocks.data.datasources.StockDao
+import com.convenience.store.stocks.data.models.StockDto
 import com.convenience.store.stocks.data.models.toDomain
+import com.convenience.store.stocks.data.models.toDto
 import com.convenience.store.stocks.domain.entities.Stock
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.repositories.StockRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
 
 class StockRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
-    private val stockEntityDao: StockEntityDao,
-    private val eventLogEntityDao: EventLogEntityDao
+    private val stockEntityDao: StockDao,
+    private val eventLogEntityDao: EventLogDao
 ) : StockRepository {
 
     override fun getStockById(productId: UUID): Flow<Stock?> {
@@ -34,13 +37,17 @@ class StockRepositoryImpl @Inject constructor(
     ): Either<StockError, Unit> {
         database
             .withTransaction {
-                stockEntityDao.updateStock(productId, quantity)
-                val event = EventLogEntity(
+                val result = stockEntityDao.updateStock(productId, quantity)
+                if (result == 0) stockEntityDao.insertOrUpdateStock(StockDto(productId, quantity))
+
+                val eventPayload = StockAddEvent(productId, quantity)
+
+                val event = EventLogDto(
                     type = StockAddEvent.NAME,
                     dataId = productId,
-                    payload = StockAddEvent(productId, quantity).toString() // TODO to json
+                    payload = Json.encodeToString(eventPayload.toDto())
                 )
-                eventLogEntityDao.insertEvent(event)
+                eventLogEntityDao.insert(event)
             }
 
         return Either.Right(Unit)
@@ -53,12 +60,15 @@ class StockRepositoryImpl @Inject constructor(
         database
             .withTransaction {
                 stockEntityDao.updateStock(productId, quantity.negate())
-                val event = EventLogEntity(
+
+                val eventPayload = StockRemoveEvent(productId, quantity)
+
+                val event = EventLogDto(
                     type = StockRemoveEvent.NAME,
                     dataId = productId,
-                    payload = StockRemoveEvent(productId, quantity).toString() // TODO to json
+                    payload = Json.encodeToString(eventPayload.toDto())
                 )
-                eventLogEntityDao.insertEvent(event)
+                eventLogEntityDao.insert(event)
             }
 
         return Either.Right(Unit)

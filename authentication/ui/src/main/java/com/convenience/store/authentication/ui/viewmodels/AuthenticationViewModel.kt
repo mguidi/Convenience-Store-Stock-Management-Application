@@ -32,16 +32,13 @@ class AuthenticationViewModel @Inject constructor(
             _uiState.value = AuthenticationScreenState.Loading
             val username = usernameState.text.toString()
             val password = passwordState.text.toString()
-            val loginResult = loginUseCase.invoke(username, password)
-            loginResult.fold(
+            loginUseCase(username, password).fold(
                 ifLeft = {
                     _uiState.value = AuthenticationScreenState.Error(it)
-                },
-                ifRight = {
+                }, ifRight = {
                     clearFields()
                     _uiState.value = AuthenticationScreenState.Success
-                }
-            )
+                })
         }
     }
 

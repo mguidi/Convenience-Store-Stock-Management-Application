@@ -29,9 +29,8 @@ import java.util.UUID
 
 @Composable
 fun ProductItem(
-    modifier: Modifier = Modifier,
     product: Product,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
 
     val viewModel = hiltViewModel<ProductsViewModel>()
@@ -39,7 +38,6 @@ fun ProductItem(
         .collectAsState(initial = Stock(product.id, BigDecimal.ZERO))
 
     ProductItemInt(
-        modifier,
         product,
         stockQuantity = stock?.quantity ?: BigDecimal.ZERO,
         onClick
@@ -48,13 +46,12 @@ fun ProductItem(
 
 @Composable
 internal fun ProductItemInt(
-    modifier: Modifier = Modifier,
     product: Product,
-    stockQuantity: BigDecimal = BigDecimal.ZERO,
-    onClick: () -> Unit = {}
+    stockQuantity: BigDecimal,
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         onClick = onClick,
@@ -128,6 +125,6 @@ fun ProductItemIntPreview() {
         supplierId = UUID.randomUUID(),
     )
     MaterialTheme {
-        ProductItemInt(product = sampleProduct)
+        ProductItemInt(product = sampleProduct, stockQuantity = BigDecimal.ZERO, onClick = {})
     }
 }

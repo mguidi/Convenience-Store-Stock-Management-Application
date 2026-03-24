@@ -7,13 +7,13 @@ import java.math.BigDecimal
 import java.util.UUID
 
 @Entity(tableName = "stocks")
-data class StockEntity(
+data class StockDto(
     @PrimaryKey val productId: UUID,
     val quantity: BigDecimal,
 )
 
 
-fun StockEntity.toDomain() = Stock(
+fun StockDto.toDomain() = Stock(
     productId = this.productId,
     quantity = this.quantity
 )

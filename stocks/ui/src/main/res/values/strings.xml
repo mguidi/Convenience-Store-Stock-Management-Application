@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stocks_manage_stock">Manage Stock</string>
+    <string name="stocks_current_stock">Current Stock</string>
+    <string name="stocks_adjust_quantity">Quantity to adjust</string>
+    <string name="stocks_add">Add</string>
+    <string name="stocks_remove">Remove</string>
+    <string name="stocks_errors_invalid_quantity">Invalid quantity</string>
+    <string name="stocks_errors_insufficient_stock">Insufficient stock available"></string>
+</resources>

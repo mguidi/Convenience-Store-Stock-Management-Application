@@ -20,6 +20,7 @@ import com.convenience.store.authentication.domain.entities.AuthenticationState
 import com.convenience.store.authentication.ui.screens.AuthenticationScreen
 import com.convenience.store.products.ui.screens.ProductAddScreen
 import com.convenience.store.products.ui.screens.ProductsScreen
+import com.convenience.store.stocks.ui.screens.StockManagementScreen
 
 @Composable
 fun NavigationScreen() {
@@ -72,7 +73,15 @@ fun NavigationScreen() {
                     MainScreen(backStack) { onMenuClick ->
                         ProductsScreen(
                             onMenuClick = onMenuClick,
-                            onAddClick = { backStack.add(Screens.ProductAddScreen) }
+                            onAddClick = { backStack.add(Screens.ProductAddScreen) },
+                            onProductClick = {
+                                backStack.add(
+                                    Screens.StockManagementScreen(
+                                        it.id,
+                                        it.name
+                                    )
+                                )
+                            }
                         )
                     }
                 }
@@ -80,6 +89,16 @@ fun NavigationScreen() {
                 is Screens.ProductAddScreen -> NavEntry(key) {
                     MainScreen(backStack) { _ ->
                         ProductAddScreen(
+                            onBackClick = { backStack.removeAt(backStack.size - 1) },
+                        )
+                    }
+                }
+
+                is Screens.StockManagementScreen -> NavEntry(key) {
+                    MainScreen(backStack) { _ ->
+                        StockManagementScreen(
+                            key.productId,
+                            key.productName,
                             onBackClick = { backStack.removeAt(backStack.size - 1) },
                         )
                     }

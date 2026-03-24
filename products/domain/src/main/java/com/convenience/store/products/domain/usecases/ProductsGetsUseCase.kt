@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductsGetUseCase {
 
-    fun invoke(): Flow<PagingData<Product>>
+    operator fun invoke(): Flow<PagingData<Product>>
 
 }
 

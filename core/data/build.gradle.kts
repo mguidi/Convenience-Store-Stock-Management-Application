@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
+
 
 android {
     namespace = "com.convenience.store.core.data"
@@ -41,4 +43,5 @@ dependencies {
     implementation(libs.uuid.creator)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    api(libs.org.jetbrains.kotlinx.json)
 }

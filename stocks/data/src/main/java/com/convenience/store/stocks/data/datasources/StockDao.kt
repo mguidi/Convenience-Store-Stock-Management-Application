@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.convenience.store.stocks.data.models.StockEntity
+import com.convenience.store.stocks.data.models.StockDto
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.util.UUID
@@ -13,7 +13,7 @@ import java.util.UUID
  * Data Access Object (DAO) for the stocks table.
  */
 @Dao
-interface StockEntityDao {
+interface StockDao {
 
     /**
      * Inserts or updates a stock entry.
@@ -21,19 +21,19 @@ interface StockEntityDao {
      * @param stock The stock entity to be saved.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateStock(stock: StockEntity)
+    suspend fun insertOrUpdateStock(stock: StockDto)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(products: List<StockEntity>)
+    suspend fun insertAll(products: List<StockDto>)
 
     /**
      * Retrieves the stock for a specific product.
      *
      * @param productId The unique identifier of the product.
-     * @return The [StockEntity] or null if not found.
+     * @return The [StockDto] or null if not found.
      */
     @Query("SELECT * FROM stocks WHERE productId = :productId")
-    fun getStockByProductId(productId: UUID): Flow<StockEntity?>
+    fun getStockByProductId(productId: UUID): Flow<StockDto?>
 
     /**
      * Updates the stock quantity for a specific product.

@@ -9,7 +9,7 @@ import java.util.UUID
 
 interface ProductRepository {
 
-    suspend fun insert(product: Product): Either<ProductError, Unit>
+    suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit>
 
     fun getProductById(productId: UUID): Flow<Product?>
 
