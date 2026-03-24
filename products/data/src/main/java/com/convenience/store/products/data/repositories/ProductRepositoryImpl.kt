@@ -13,7 +13,7 @@ import arrow.core.left
 import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
-import com.convenience.store.core.domain.events.ProductAddEvent
+import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
@@ -44,7 +44,7 @@ class ProductRepositoryImpl @Inject constructor(
         return try {
             database.withTransaction {
                 productDao.insert(product.toDto())
-                val eventPayload = ProductAddEvent(
+                val eventPayload = ProductCreateEvent(
                     product.id,
                     product.name,
                     product.description,
@@ -55,7 +55,7 @@ class ProductRepositoryImpl @Inject constructor(
                 )
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
-                    type = ProductAddEvent.NAME,
+                    type = ProductCreateEvent.NAME,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogDao.insert(event)
@@ -83,8 +83,8 @@ class ProductRepositoryImpl @Inject constructor(
             null
         }
 
-        remoteResult?.onRight { apiDto ->
-            productDao.insertOrUpdateProduct(apiDto.toDto())
+        remoteResult?.onRight { remoteProduct ->
+            if (remoteProduct.version > (localProduct?.version ?: -1)) productDao.insertOrUpdateProduct(remoteProduct.toDto())
         }
 
         emitAll(productDao.getProductById(productId).map { it?.toDomain() })

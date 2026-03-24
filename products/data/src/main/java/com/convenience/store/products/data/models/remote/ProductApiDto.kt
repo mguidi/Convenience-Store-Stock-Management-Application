@@ -15,7 +15,8 @@ data class ProductApiDto(
     @Serializable(with = BigDecimalSerializer::class) val price: BigDecimal,
     val barcode: String,
     @Serializable(with = UuidSerializer::class) val categoryId: UUID,
-    @Serializable(with = UuidSerializer::class) val supplierId: UUID
+    @Serializable(with = UuidSerializer::class) val supplierId: UUID,
+    val version: Long
 )
 
 fun ProductApiDto.toDto() = ProductDto(
@@ -25,5 +26,6 @@ fun ProductApiDto.toDto() = ProductDto(
     price = price,
     barcode = barcode,
     categoryId = categoryId,
-    supplierId = supplierId
+    supplierId = supplierId,
+    version = version,
 )

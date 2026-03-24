@@ -22,7 +22,7 @@ class ProductAddUseCaseTest {
     private val productRepository: ProductRepository = mockk()
     private val uuidService: UuidService = mockk()
 
-    private lateinit var useCase: ProductAddUseCase
+    private lateinit var useCase: ProductCreateUseCase
 
     @BeforeEach
     fun setUp() {

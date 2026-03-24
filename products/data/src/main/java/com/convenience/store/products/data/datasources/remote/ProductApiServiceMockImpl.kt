@@ -3,7 +3,7 @@ package com.convenience.store.products.data.datasources.remote
 import android.util.Log
 import arrow.core.Either
 import arrow.core.right
-import com.convenience.store.products.data.models.remote.ProductAddApiDto
+import com.convenience.store.products.data.models.remote.ProductCreateApiDto
 import com.convenience.store.products.data.models.remote.ProductApiDto
 import com.convenience.store.products.data.models.remote.ProductApiError
 import kotlinx.coroutines.delay
@@ -14,10 +14,10 @@ import javax.inject.Inject
 
 class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
-    override suspend fun addProduct(productAddApiDto: ProductAddApiDto): Either<ProductApiError, Unit> {
+    override suspend fun createProduct(productCreateApiDto: ProductCreateApiDto): Either<ProductApiError, Unit> {
         Log.d(
             "ProductApiService",
-            "Add product: ${Json.encodeToString(productAddApiDto)}"
+            "Create product: ${Json.encodeToString(productCreateApiDto)}"
         )
         delay(2000)
         return Either.Right(Unit)
@@ -33,6 +33,7 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
             barcode = "9876543210987",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
+            version = 0
         ).right()
     }
 
@@ -47,6 +48,7 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
                 barcode = "1234567890123",
                 categoryId = UUID.randomUUID(),
                 supplierId = UUID.randomUUID(),
+                version = 0
             ),
             ProductApiDto(
                 id = UUID.fromString("4f7edd9a-236a-4921-b720-dbe451646a0f"),
@@ -56,6 +58,7 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
                 barcode = "9876543210987",
                 categoryId = UUID.randomUUID(),
                 supplierId = UUID.randomUUID(),
+                version = 0
             )
         )
         return initialProducts.right()

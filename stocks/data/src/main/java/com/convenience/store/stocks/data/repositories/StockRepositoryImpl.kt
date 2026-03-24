@@ -48,8 +48,10 @@ class StockRepositoryImpl @Inject constructor(
             null
         }
 
-        remoteResult?.onRight { stockDto ->
-            stockDao.insertOrUpdateStock(stockDto.toDto())
+        remoteResult?.onRight { remoteStock ->
+            if (remoteStock.version > (localStock?.version ?: -1)) stockDao.insertOrUpdateStock(
+                remoteStock.toDto()
+            )
         }
 
         emitAll(stockDao.getStockByProductId(productId).map { it?.toDomain() })
@@ -62,7 +64,7 @@ class StockRepositoryImpl @Inject constructor(
         database
             .withTransaction {
                 val result = stockDao.updateStock(productId, quantity)
-                if (result == 0) stockDao.insertOrUpdateStock(StockDto(productId, quantity))
+                if (result == 0) stockDao.insertOrUpdateStock(StockDto(productId, quantity, 0))
 
                 val eventPayload = StockAddEvent(productId, quantity)
 
@@ -83,7 +85,8 @@ class StockRepositoryImpl @Inject constructor(
     ): Either<StockError, Unit> {
         database
             .withTransaction {
-                stockDao.updateStock(productId, quantity.negate())
+                val result = stockDao.updateStock(productId, quantity.negate())
+                if (result == 0) stockDao.insertOrUpdateStock(StockDto(productId, quantity.negate(), 0))
 
                 val eventPayload = StockRemoveEvent(productId, quantity)
 

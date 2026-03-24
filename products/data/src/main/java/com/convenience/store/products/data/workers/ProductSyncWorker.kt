@@ -6,10 +6,10 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.convenience.store.core.data.datasources.EventLogDao
-import com.convenience.store.core.domain.events.ProductAddEvent
+import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.products.data.datasources.remote.ProductApiService
-import com.convenience.store.products.data.models.remote.ProductAddApiDto
-import com.convenience.store.products.data.models.local.ProductAddEventDto
+import com.convenience.store.products.data.models.remote.ProductCreateApiDto
+import com.convenience.store.products.data.models.local.ProductCreateEventDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -50,10 +50,10 @@ class ProductSyncWorker @AssistedInject constructor(
         var allSuccess = true
         for (event in events) {
             val syncResult = when (event.type) {
-                ProductAddEvent.NAME -> {
-                    val data = json.decodeFromString<ProductAddEventDto>(event.payload)
-                    productApiService.addProduct(
-                        ProductAddApiDto(
+                ProductCreateEvent.NAME -> {
+                    val data = json.decodeFromString<ProductCreateEventDto>(event.payload)
+                    productApiService.createProduct(
+                        ProductCreateApiDto(
                             requestId = event.id,
                             id = data.id,
                             name = data.name,

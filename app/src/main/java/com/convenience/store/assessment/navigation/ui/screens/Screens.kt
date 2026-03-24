@@ -7,7 +7,7 @@ sealed interface Screens {
     data object AuthenticationScreen : Screens
     data object ProductsScreen : Screens
 
-    data object ProductAddScreen : Screens
+    data object ProductCreateScreen : Screens
 
     data class StockManagementScreen(val productId: UUID, val productName: String) : Screens
 

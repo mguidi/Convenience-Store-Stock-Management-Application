@@ -19,25 +19,28 @@ data class ProductDto(
     val barcode: String,
     val categoryId: UUID,
     val supplierId: UUID,
+    val version: Long,
     val timestamp: Long = System.currentTimeMillis()
 )
 
 fun ProductDto.toDomain() = Product(
-    id = this.id,
-    name = this.name,
-    description = this.description,
-    price = this.price,
-    barcode = this.barcode,
-    categoryId = this.categoryId,
-    supplierId = this.supplierId,
+    id = id,
+    name = name,
+    description = description,
+    price = price,
+    barcode = barcode,
+    categoryId = categoryId,
+    supplierId = supplierId,
+    version = version,
 )
 
 fun Product.toDto() = ProductDto(
-    id = this.id,
-    name = this.name,
-    description = this.description,
-    price = this.price,
-    barcode = this.barcode,
-    categoryId = this.categoryId,
-    supplierId = this.supplierId,
+    id = id,
+    name = name,
+    description = description,
+    price = price,
+    barcode = barcode,
+    categoryId = categoryId,
+    supplierId = supplierId,
+    version = version,
 )

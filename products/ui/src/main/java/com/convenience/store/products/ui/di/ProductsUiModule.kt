@@ -3,7 +3,7 @@ package com.convenience.store.products.ui.di
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.repositories.ProductRepository
 import com.convenience.store.products.domain.services.ProductSyncService
-import com.convenience.store.products.domain.usecases.ProductAddUseCase
+import com.convenience.store.products.domain.usecases.ProductCreateUseCase
 import com.convenience.store.products.domain.usecases.ProductAddUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCaseImpl
@@ -22,7 +22,7 @@ object ProductsUiModule {
         uuidService: UuidService,
         productSyncService: ProductSyncService,
         productRepository: ProductRepository
-    ): ProductAddUseCase {
+    ): ProductCreateUseCase {
         return ProductAddUseCaseImpl(uuidService, productSyncService, productRepository)
     }
 

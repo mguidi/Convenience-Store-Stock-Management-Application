@@ -18,7 +18,7 @@ import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationScree
 import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationViewModel
 import com.convenience.store.authentication.domain.entities.AuthenticationState
 import com.convenience.store.authentication.ui.screens.AuthenticationScreen
-import com.convenience.store.products.ui.screens.ProductAddScreen
+import com.convenience.store.products.ui.screens.ProductCreateScreen
 import com.convenience.store.products.ui.screens.ProductsScreen
 import com.convenience.store.stocks.ui.screens.StockManagementScreen
 
@@ -73,7 +73,7 @@ fun NavigationScreen() {
                     MainScreen(backStack) { onMenuClick ->
                         ProductsScreen(
                             onMenuClick = onMenuClick,
-                            onAddClick = { backStack.add(Screens.ProductAddScreen) },
+                            onAddClick = { backStack.add(Screens.ProductCreateScreen) },
                             onProductClick = {
                                 backStack.add(
                                     Screens.StockManagementScreen(
@@ -86,9 +86,9 @@ fun NavigationScreen() {
                     }
                 }
 
-                is Screens.ProductAddScreen -> NavEntry(key) {
+                is Screens.ProductCreateScreen -> NavEntry(key) {
                     MainScreen(backStack) { _ ->
-                        ProductAddScreen(
+                        ProductCreateScreen(
                             onBackClick = { backStack.removeAt(backStack.size - 1) },
                         )
                     }

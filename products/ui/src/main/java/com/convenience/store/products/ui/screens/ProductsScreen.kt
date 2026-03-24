@@ -149,6 +149,7 @@ private fun getSamplePagingItems(): LazyPagingItems<Product> {
             barcode = "1234567890123",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
+            version = 0
         ),
         Product(
             id = UUID.randomUUID(),
@@ -158,6 +159,7 @@ private fun getSamplePagingItems(): LazyPagingItems<Product> {
             barcode = "9876543210987",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
+            version = 0
         )
     )
 

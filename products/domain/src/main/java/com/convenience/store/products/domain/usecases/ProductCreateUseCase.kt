@@ -10,7 +10,7 @@ import com.convenience.store.products.domain.services.ProductSyncService
 import java.math.BigDecimal
 import java.util.UUID
 
-interface ProductAddUseCase {
+interface ProductCreateUseCase {
 
     suspend operator fun invoke(
         name: String,
@@ -27,7 +27,7 @@ class ProductAddUseCaseImpl(
     private val uuidService: UuidService,
     private val productSyncService: ProductSyncService,
     private val productRepository: ProductRepository
-) : ProductAddUseCase {
+) : ProductCreateUseCase {
 
     override suspend operator fun invoke(
         name: String,
@@ -57,6 +57,7 @@ class ProductAddUseCaseImpl(
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
+            version = 0
         )
 
         return productRepository.insert(product)

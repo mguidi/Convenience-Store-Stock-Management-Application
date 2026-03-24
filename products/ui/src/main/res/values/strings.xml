@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="products_products">Products</string>
-    <string name="products_add_product">Add Product</string>
+    <string name="products_create_product">Create Product</string>
     <string name="products_name">Name</string>
     <string name="products_description">Description</string>
     <string name="products_price">Price</string>

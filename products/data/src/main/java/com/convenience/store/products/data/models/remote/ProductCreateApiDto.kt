@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 @Serializable
-data class ProductAddApiDto(
+data class ProductCreateApiDto(
     @Serializable(with = UuidSerializer::class) val requestId: UUID,
     @Serializable(with = UuidSerializer::class) val id: UUID,
     val name: String,

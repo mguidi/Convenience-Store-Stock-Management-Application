@@ -35,11 +35,11 @@ fun ProductItem(
 
     val viewModel = hiltViewModel<ProductsViewModel>()
     val stock by viewModel.getStockById(product.id)
-        .collectAsState(initial = Stock(product.id, BigDecimal.ZERO))
+        .collectAsState(initial = null)
 
     ProductItemInt(
         product,
-        stockQuantity = stock?.quantity ?: BigDecimal.ZERO,
+        stockQuantity = stock?.quantity,
         onClick
     )
 }
@@ -47,7 +47,7 @@ fun ProductItem(
 @Composable
 internal fun ProductItemInt(
     product: Product,
-    stockQuantity: BigDecimal,
+    stockQuantity: BigDecimal?,
     onClick: () -> Unit
 ) {
     Card(
@@ -98,9 +98,12 @@ internal fun ProductItemInt(
                         style = MaterialTheme.typography.labelSmall
                     )
                     Text(
-                        text = stringResource(R.string.products_quantity_colon, stockQuantity),
+                        text = stringResource(
+                            R.string.products_quantity_colon,
+                            stockQuantity ?: ""
+                        ),
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (stockQuantity <= BigDecimal.ZERO) {
+                        color = if ((stockQuantity ?: BigDecimal.ZERO) <= BigDecimal.ZERO) {
                             MaterialTheme.colorScheme.error
                         } else {
                             MaterialTheme.colorScheme.outline
@@ -123,6 +126,7 @@ fun ProductItemIntPreview() {
         barcode = "1234567890123",
         categoryId = UUID.randomUUID(),
         supplierId = UUID.randomUUID(),
+        version = 0
     )
     MaterialTheme {
         ProductItemInt(product = sampleProduct, stockQuantity = BigDecimal.ZERO, onClick = {})

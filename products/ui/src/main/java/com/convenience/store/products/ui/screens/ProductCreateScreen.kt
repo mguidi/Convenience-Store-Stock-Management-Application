@@ -43,18 +43,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.convenience.store.core.ui.widgets.GenericExposedDropdown
 import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.ProductError
-import com.convenience.store.products.ui.viewmodels.ProductAddScreenState
-import com.convenience.store.products.ui.viewmodels.ProductAddViewModel
+import com.convenience.store.products.ui.viewmodels.ProductCreateScreenState
+import com.convenience.store.products.ui.viewmodels.ProductCreateViewModel
 import com.convenience.store.suppliers.domain.entities.Supplier
 import com.convenience.store.core.ui.R as coreR
 import com.convenience.store.products.ui.R as productsR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductAddScreen(
+fun ProductCreateScreen(
     onBackClick: () -> Unit,
 ) {
-    val viewModel = hiltViewModel<ProductAddViewModel>()
+    val viewModel = hiltViewModel<ProductCreateViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
@@ -75,11 +75,11 @@ fun ProductAddScreen(
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
-            is ProductAddScreenState.Success -> {
+            is ProductCreateScreenState.Success -> {
                 onBackClickClean()
             }
 
-            is ProductAddScreenState.Error -> {
+            is ProductCreateScreenState.Error -> {
                 val message = state.errors.joinToString("\n") { error ->
                     when (error) {
                         is ProductError.ValidationError.InvalidName -> context.getString(productsR.string.products_errors_invalid_name)
@@ -113,13 +113,13 @@ fun ProductAddScreen(
         }
     }
 
-    ProductAddScreenInt(
+    ProductCreateScreenInt(
         nameState = viewModel.nameState,
         descriptionState = viewModel.descriptionState,
         priceState = viewModel.priceState,
         barcodeState = viewModel.barcodeState,
         snackbarHostState = snackbarHostState,
-        isLoading = uiState is ProductAddScreenState.Loading,
+        isLoading = uiState is ProductCreateScreenState.Loading,
         categories = categories,
         selectedCategory = selectedCategory,
         suppliers = suppliers,
@@ -135,7 +135,7 @@ fun ProductAddScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ProductAddScreenInt(
+internal fun ProductCreateScreenInt(
     nameState: TextFieldState,
     descriptionState: TextFieldState,
     priceState: TextFieldState,
@@ -164,7 +164,7 @@ internal fun ProductAddScreenInt(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(productsR.string.products_add_product)) },
+                title = { Text(stringResource(productsR.string.products_create_product)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick, enabled = !isLoading) {
                         Icon(
@@ -276,9 +276,9 @@ internal fun ProductAddScreenInt(
 
 @Preview(showBackground = true)
 @Composable
-fun ProductAddScreenPreview() {
+fun ProductCreateScreenPreview() {
     MaterialTheme {
-        ProductAddScreenInt(
+        ProductCreateScreenInt(
             nameState = rememberTextFieldState(),
             descriptionState = rememberTextFieldState(),
             priceState = rememberTextFieldState(),

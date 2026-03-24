@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.ProductError
-import com.convenience.store.products.domain.usecases.ProductAddUseCase
+import com.convenience.store.products.domain.usecases.ProductCreateUseCase
 import com.convenience.store.suppliers.domain.entities.Supplier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,8 +16,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductAddViewModel @Inject constructor(
-    private val productAddUseCase: ProductAddUseCase
+class ProductCreateViewModel @Inject constructor(
+    private val productCreateUseCase: ProductCreateUseCase
 ) : ViewModel() {
 
     // State for Product fields
@@ -39,8 +39,8 @@ class ProductAddViewModel @Inject constructor(
     val selectedSupplier = _selectedSupplier.asStateFlow()
 
     // Ui state
-    private val _uiState: MutableStateFlow<ProductAddScreenState> =
-        MutableStateFlow(ProductAddScreenState.Init)
+    private val _uiState: MutableStateFlow<ProductCreateScreenState> =
+        MutableStateFlow(ProductCreateScreenState.Init)
     val uiState = _uiState.asStateFlow()
 
     private var isInitialized = false
@@ -56,7 +56,7 @@ class ProductAddViewModel @Inject constructor(
     fun reset() {
         clearFields()
         isInitialized = false
-        _uiState.value = ProductAddScreenState.Init
+        _uiState.value = ProductCreateScreenState.Init
     }
 
     fun onCategorySelected(category: Category) {
@@ -76,14 +76,14 @@ class ProductAddViewModel @Inject constructor(
         val barcode = barcodeState.text.toString()
 
         viewModelScope.launch {
-            _uiState.value = ProductAddScreenState.Loading
-            productAddUseCase(name, description, price, barcode, categoryId, supplierId).fold(
+            _uiState.value = ProductCreateScreenState.Loading
+            productCreateUseCase(name, description, price, barcode, categoryId, supplierId).fold(
                 ifLeft = {
-                    _uiState.value = ProductAddScreenState.Error(it)
+                    _uiState.value = ProductCreateScreenState.Error(it)
                 },
                 ifRight = {
                     reset()
-                    _uiState.value = ProductAddScreenState.Success
+                    _uiState.value = ProductCreateScreenState.Success
                 }
             )
         }
@@ -116,9 +116,9 @@ class ProductAddViewModel @Inject constructor(
     }
 }
 
-sealed interface ProductAddScreenState {
-    data object Init : ProductAddScreenState
-    data object Loading : ProductAddScreenState
-    data class Error(val errors: List<ProductError>) : ProductAddScreenState
-    data object Success : ProductAddScreenState
+sealed interface ProductCreateScreenState {
+    data object Init : ProductCreateScreenState
+    data object Loading : ProductCreateScreenState
+    data class Error(val errors: List<ProductError>) : ProductCreateScreenState
+    data object Success : ProductCreateScreenState
 }

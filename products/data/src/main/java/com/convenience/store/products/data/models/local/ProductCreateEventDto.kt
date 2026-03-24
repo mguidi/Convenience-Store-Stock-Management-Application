@@ -2,13 +2,13 @@ package com.convenience.store.products.data.models.local
 
 import com.convenience.store.core.data.serializers.BigDecimalSerializer
 import com.convenience.store.core.data.serializers.UuidSerializer
-import com.convenience.store.core.domain.events.ProductAddEvent
+import com.convenience.store.core.domain.events.ProductCreateEvent
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 import java.util.UUID
 
 @Serializable
-internal data class ProductAddEventDto(
+internal data class ProductCreateEventDto(
     @Serializable(with = UuidSerializer::class) val id: UUID,
     val name: String,
     val description: String,
@@ -18,7 +18,7 @@ internal data class ProductAddEventDto(
     @Serializable(with = UuidSerializer::class) val supplierId: UUID
 )
 
-internal fun ProductAddEvent.toDto() = ProductAddEventDto(
+internal fun ProductCreateEvent.toDto() = ProductCreateEventDto(
     id = id,
     name = name,
     description = description,
