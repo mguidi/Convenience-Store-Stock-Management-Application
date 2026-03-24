@@ -3,6 +3,8 @@ package com.convenience.store.stocks.ui.di
 import com.convenience.store.stocks.domain.repositories.StockRepository
 import com.convenience.store.stocks.domain.usecases.StockAddUseCase
 import com.convenience.store.stocks.domain.usecases.StockAddUseCaseImpl
+import com.convenience.store.stocks.domain.usecases.StockGetByIdUseCase
+import com.convenience.store.stocks.domain.usecases.StockGetByIdUseCaseImpl
 import com.convenience.store.stocks.domain.usecases.StockRemoveUseCase
 import com.convenience.store.stocks.domain.usecases.StockRemoveUseCaseImpl
 import dagger.Module
@@ -29,6 +31,14 @@ object StocksUiModule {
         stockRepository: StockRepository
     ): StockRemoveUseCase {
         return StockRemoveUseCaseImpl(stockRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStockGetByIdUseCase(
+        stockRepository: StockRepository
+    ): StockGetByIdUseCase {
+        return StockGetByIdUseCaseImpl(stockRepository)
     }
 
 }

@@ -25,7 +25,6 @@ class ProductAddViewModel @Inject constructor(
     val descriptionState = TextFieldState()
     val priceState = TextFieldState()
     val barcodeState = TextFieldState()
-    val availableQuantityState = TextFieldState()
 
     // State for Categories
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
@@ -75,7 +74,6 @@ class ProductAddViewModel @Inject constructor(
         val description = descriptionState.text.toString()
         val price = priceState.text.toString().toBigDecimal()
         val barcode = barcodeState.text.toString()
-        val availableQuantity = availableQuantityState.text.toString().toBigDecimal()
 
         viewModelScope.launch {
             _uiState.value = ProductAddScreenState.Loading
@@ -86,7 +84,6 @@ class ProductAddViewModel @Inject constructor(
                 barcode,
                 categoryId,
                 supplierId,
-                availableQuantity
             )
 
             result.fold(
@@ -123,7 +120,6 @@ class ProductAddViewModel @Inject constructor(
         descriptionState.clearText()
         priceState.clearText()
         barcodeState.clearText()
-        availableQuantityState.clearText()
         _selectedCategory.value = null
         _selectedSupplier.value = null
     }

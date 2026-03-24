@@ -15,7 +15,6 @@ data class ProductEntity(
     val barcode: String,
     val categoryId: UUID,
     val supplierId: UUID,
-    val availableQuantity: BigDecimal,
     val timestamp: Long = System.currentTimeMillis()
 )
 
@@ -27,7 +26,6 @@ fun ProductEntity.toDomain() = Product(
     barcode = this.barcode,
     categoryId = this.categoryId,
     supplierId = this.supplierId,
-    availableQuantity = this.availableQuantity,
 )
 
 fun Product.toEntity() = ProductEntity(
@@ -38,5 +36,4 @@ fun Product.toEntity() = ProductEntity(
     barcode = this.barcode,
     categoryId = this.categoryId,
     supplierId = this.supplierId,
-    availableQuantity = this.availableQuantity,
 )

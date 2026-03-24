@@ -1,7 +1,9 @@
 package com.convenience.store.stocks.domain.repositories
 
 import arrow.core.Either
+import com.convenience.store.stocks.domain.entities.Stock
 import com.convenience.store.stocks.domain.entities.StockError
+import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -11,6 +13,8 @@ import java.util.UUID
  * It uses Arrow's Either type to provide functional error handling.
  */
 interface StockRepository {
+
+    fun getStockById(productId: UUID) : Flow<Stock?>
 
     /**
      * Increases the available stock for a specific product.

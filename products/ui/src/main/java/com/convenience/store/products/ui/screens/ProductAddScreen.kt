@@ -93,7 +93,6 @@ fun ProductAddScreen(
         descriptionState = viewModel.descriptionState,
         priceState = viewModel.priceState,
         barcodeState = viewModel.barcodeState,
-        availableQuantityState = viewModel.availableQuantityState,
         categories = categories,
         selectedCategory = selectedCategory,
         suppliers = suppliers,
@@ -117,7 +116,6 @@ internal fun ProductAddScreenInt(
     descriptionState: TextFieldState = rememberTextFieldState(),
     priceState: TextFieldState = rememberTextFieldState(),
     barcodeState: TextFieldState = rememberTextFieldState(),
-    availableQuantityState: TextFieldState = rememberTextFieldState(),
     categories: List<Category> = emptyList(),
     selectedCategory: Category? = null,
     suppliers: List<Supplier> = emptyList(),
@@ -133,7 +131,6 @@ internal fun ProductAddScreenInt(
     val isSaveEnabled = !isLoading &&
             nameState.text.isNotBlank() &&
             priceState.text.toString().toBigDecimalOrNull() != null &&
-            availableQuantityState.text.toString().toBigDecimalOrNull() != null &&
             selectedCategory != null &&
             selectedSupplier != null
 
@@ -230,15 +227,6 @@ internal fun ProductAddScreenInt(
                 enabled = !isLoading
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                state = availableQuantityState,
-                label = { Text(stringResource(productsR.string.products_initial_quantity)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                enabled = !isLoading
-            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

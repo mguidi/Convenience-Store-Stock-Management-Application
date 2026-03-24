@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.convenience.store.stocks.data.models.StockEntity
+import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -22,6 +23,9 @@ interface StockEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateStock(stock: StockEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(products: List<StockEntity>)
+
     /**
      * Retrieves the stock for a specific product.
      *
@@ -29,7 +33,7 @@ interface StockEntityDao {
      * @return The [StockEntity] or null if not found.
      */
     @Query("SELECT * FROM stocks WHERE productId = :productId")
-    suspend fun getStockByProductId(productId: UUID): StockEntity?
+    fun getStockByProductId(productId: UUID): Flow<StockEntity?>
 
     /**
      * Updates the stock quantity for a specific product.

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -24,6 +25,8 @@ import com.convenience.store.products.domain.entities.Product
 import kotlinx.coroutines.flow.flowOf
 import java.math.BigDecimal
 import java.util.UUID
+import com.convenience.store.core.ui.R as coreR
+import com.convenience.store.products.ui.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +67,8 @@ fun ProductsListScreen(
                 is LoadState.Error -> {
                     item {
                         ErrorItem(
-                            message = state.error.localizedMessage ?: "Unknown error",
+                            message = state.error.localizedMessage
+                                ?: stringResource(coreR.string.core_unknown_error),
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -82,7 +86,8 @@ fun ProductsListScreen(
 
             is LoadState.Error -> {
                 ErrorItem(
-                    message = state.error.localizedMessage ?: "Unknown error",
+                    message = state.error.localizedMessage
+                        ?: stringResource(coreR.string.core_unknown_error),
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -113,7 +118,7 @@ private fun ErrorItem(message: String, modifier: Modifier = Modifier) {
 @Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(text = "No products found")
+        Text(text = stringResource(R.string.products_no_products_found))
     }
 }
 
@@ -129,7 +134,6 @@ fun ProductsListScreenPreview() {
             barcode = "1234567890123",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            availableQuantity = BigDecimal("25")
         ),
         Product(
             id = UUID.randomUUID(),
@@ -139,7 +143,6 @@ fun ProductsListScreenPreview() {
             barcode = "9876543210987",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            availableQuantity = BigDecimal("15")
         )
     )
 

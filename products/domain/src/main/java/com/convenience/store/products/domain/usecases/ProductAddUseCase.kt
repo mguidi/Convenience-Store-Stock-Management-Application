@@ -17,7 +17,6 @@ interface ProductAddUseCase {
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        availableQuantity: BigDecimal
     ): Either<ProductError, Unit>
 
 }
@@ -34,7 +33,6 @@ class ProductAddUseCaseImpl(
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        availableQuantity: BigDecimal
     ): Either<ProductError, Unit> {
 
         // TODO check if fields are valid
@@ -47,7 +45,6 @@ class ProductAddUseCaseImpl(
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
-            availableQuantity = availableQuantity,
         )
 
         return productRepository.insert(product)

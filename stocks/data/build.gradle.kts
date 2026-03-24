@@ -36,7 +36,7 @@ android {
 
 dependencies {
     implementation(project(":stocks:domain"))
-    implementation(project(":core:data"))
+    api(project(":core:data"))
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 }

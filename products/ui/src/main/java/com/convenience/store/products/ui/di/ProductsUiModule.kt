@@ -4,6 +4,8 @@ import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.repositories.ProductRepository
 import com.convenience.store.products.domain.usecases.ProductAddUseCase
 import com.convenience.store.products.domain.usecases.ProductAddUseCaseImpl
+import com.convenience.store.products.domain.usecases.ProductsGetUseCase
+import com.convenience.store.products.domain.usecases.ProductsGetUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,10 +17,18 @@ import javax.inject.Singleton
 object ProductsUiModule {
     @Provides
     @Singleton
-    fun bindProductAddUseCase(
+    fun provideProductAddUseCase(
         uuidService: UuidService,
         productRepository: ProductRepository
     ): ProductAddUseCase {
         return ProductAddUseCaseImpl(uuidService, productRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductsGetUseCase(
+        productRepository: ProductRepository
+    ): ProductsGetUseCase {
+        return ProductsGetUseCaseImpl(productRepository)
     }
 }

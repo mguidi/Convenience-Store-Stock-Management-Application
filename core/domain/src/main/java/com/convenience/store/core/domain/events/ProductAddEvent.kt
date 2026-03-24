@@ -1,9 +1,9 @@
-package com.convenience.store.products.domain.entities
+package com.convenience.store.core.domain.events
 
 import java.math.BigDecimal
 import java.util.UUID
 
-data class Product(
+data class ProductAddEvent(
     val id: UUID,
     val name: String,
     val description: String,
@@ -11,4 +11,8 @@ data class Product(
     val barcode: String,
     val categoryId: UUID,
     val supplierId: UUID,
-)
+) {
+    companion object {
+        const val NAME = "ProductAddEvent"
+    }
+}

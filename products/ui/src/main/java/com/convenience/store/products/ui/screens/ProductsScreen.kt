@@ -24,9 +24,10 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.window.core.layout.WindowSizeClass
+import com.convenience.store.products.ui.R
+import com.convenience.store.core.ui.R as coreR
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.ui.viewmodels.ProductsViewModel
-import com.convenience.store.core.ui.R
 import kotlinx.coroutines.flow.flowOf
 import java.math.BigDecimal
 import java.util.UUID
@@ -62,12 +63,12 @@ internal fun ProductsScreenInt(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Products") },
+                title = { Text(stringResource(R.string.products_products)) },
                 navigationIcon = {
                     IconButton(onClick = onMenuClick) {
                         Icon(
                             Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.core_nav_menu)
+                            contentDescription = stringResource(coreR.string.core_nav_menu)
                         )
                     }
                 },
@@ -75,13 +76,13 @@ internal fun ProductsScreenInt(
                     IconButton(onClick = onSearchClick) {
                         Icon(
                             Icons.Default.Search,
-                            contentDescription = stringResource(R.string.core_action_search)
+                            contentDescription = stringResource(coreR.string.core_action_search)
                         )
                     }
                     IconButton(onClick = onAddClick) {
                         Icon(
                             Icons.Default.Add,
-                            contentDescription = stringResource(R.string.core_action_add)
+                            contentDescription = stringResource(coreR.string.core_action_add)
                         )
                     }
                 },
@@ -143,7 +144,6 @@ private fun getSamplePagingItems(): LazyPagingItems<Product> {
             barcode = "1234567890123",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            availableQuantity = BigDecimal("25")
         ),
         Product(
             id = UUID.randomUUID(),
@@ -153,7 +153,6 @@ private fun getSamplePagingItems(): LazyPagingItems<Product> {
             barcode = "9876543210987",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            availableQuantity = BigDecimal("15")
         )
     )
 
