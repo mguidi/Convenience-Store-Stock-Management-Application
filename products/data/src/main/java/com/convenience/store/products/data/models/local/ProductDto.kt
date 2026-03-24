@@ -1,4 +1,4 @@
-package com.convenience.store.products.data.models
+package com.convenience.store.products.data.models.local
 
 import androidx.room.Entity
 import androidx.room.Index

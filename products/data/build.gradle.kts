@@ -39,6 +39,13 @@ dependencies {
     implementation(project(":core:domain"))
     api(project(":core:data"))
     implementation(project(":products:domain"))
+
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 }

@@ -6,6 +6,7 @@ import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
+import com.convenience.store.products.domain.services.ProductSyncService
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -24,6 +25,7 @@ interface ProductAddUseCase {
 
 class ProductAddUseCaseImpl(
     private val uuidService: UuidService,
+    private val productSyncService: ProductSyncService,
     private val productRepository: ProductRepository
 ) : ProductAddUseCase {
 
@@ -57,6 +59,10 @@ class ProductAddUseCaseImpl(
             supplierId = supplierId,
         )
 
-        return productRepository.insert(product).mapLeft { listOf(it) }
+        return productRepository.insert(product)
+            .mapLeft { listOf(it) }
+            .onRight {
+                productSyncService.scheduleSync()
+            }
     }
 }

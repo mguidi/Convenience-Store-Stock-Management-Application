@@ -1,11 +1,11 @@
-package com.convenience.store.products.data.datasources
+package com.convenience.store.products.data.datasources.local
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.convenience.store.products.data.models.ProductDto
+import com.convenience.store.products.data.models.local.ProductDto
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -15,10 +15,10 @@ interface ProductDao {
     @Insert
     suspend fun insert(product: ProductDto)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertOrUpdateProduct(product: ProductDto)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(products: List<ProductDto>)
 
     @Query("SELECT * FROM products WHERE id = :productId")

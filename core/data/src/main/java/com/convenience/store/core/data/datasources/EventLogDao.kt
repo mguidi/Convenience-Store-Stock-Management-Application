@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.convenience.store.core.data.models.EventLogDto
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 /**
  * Data Access Object (DAO) for the event_log table.
@@ -29,7 +30,16 @@ interface EventLogDao {
      * @return A Flow emitting lists of pending EventLogEntity entries.
      */
     @Query("SELECT * FROM event_log WHERE id > :lastProcessedId ORDER BY id ASC")
-    fun getEventsAfter(lastProcessedId: Long): Flow<List<EventLogDto>>
+    fun getEventsAfter(lastProcessedId: UUID): Flow<List<EventLogDto>>
+
+    /**
+     * Retrieves a reactive stream of events.
+     * Results are sorted by ID in ascending order to facilitate sequential processing.
+     *
+     * @return A Flow emitting lists of pending EventLogEntity entries.
+     */
+    @Query("SELECT * FROM event_log ORDER BY id ASC")
+    fun getEvents(): Flow<List<EventLogDto>>
 
     /**
      * Deletes events from the log that have already been processed up to a specified ID.
@@ -38,5 +48,5 @@ interface EventLogDao {
      * @param minProcessedId The threshold ID; all events with an ID less than or equal to this will be removed.
      */
     @Query("DELETE FROM event_log WHERE id <= :minProcessedId")
-    suspend fun deleteProcessedEvents(minProcessedId: Long)
+    suspend fun deleteProcessedEvents(minProcessedId: UUID)
 }

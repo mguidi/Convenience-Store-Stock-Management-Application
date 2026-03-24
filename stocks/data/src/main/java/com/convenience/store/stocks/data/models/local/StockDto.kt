@@ -1,4 +1,4 @@
-package com.convenience.store.stocks.data.models
+package com.convenience.store.stocks.data.models.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

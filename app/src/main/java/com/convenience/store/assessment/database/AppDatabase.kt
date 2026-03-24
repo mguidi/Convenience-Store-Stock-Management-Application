@@ -5,10 +5,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
-import com.convenience.store.products.data.datasources.ProductDao
-import com.convenience.store.products.data.models.ProductDto
-import com.convenience.store.stocks.data.datasources.StockDao
-import com.convenience.store.stocks.data.models.StockDto
+import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.models.local.ProductDto
+import com.convenience.store.stocks.data.datasources.local.StockDao
+import com.convenience.store.stocks.data.models.local.StockDto
 
 @Database(
     entities = [

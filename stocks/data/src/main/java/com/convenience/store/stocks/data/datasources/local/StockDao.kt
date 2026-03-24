@@ -1,10 +1,10 @@
-package com.convenience.store.stocks.data.datasources
+package com.convenience.store.stocks.data.datasources.local
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.convenience.store.stocks.data.models.StockDto
+import com.convenience.store.stocks.data.models.local.StockDto
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.util.UUID

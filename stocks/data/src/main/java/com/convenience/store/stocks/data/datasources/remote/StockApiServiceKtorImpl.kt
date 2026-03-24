@@ -1,10 +1,12 @@
-package com.convenience.store.stocks.data.datasources
+package com.convenience.store.stocks.data.datasources.remote
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.convenience.store.stocks.data.models.StockApiDto
-import com.convenience.store.stocks.data.models.StockApiError
+import com.convenience.store.stocks.data.models.remote.StockAddApiDto
+import com.convenience.store.stocks.data.models.remote.StockApiDto
+import com.convenience.store.stocks.data.models.remote.StockApiError
+import com.convenience.store.stocks.data.models.remote.StockRemoveApiDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -12,7 +14,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
 
@@ -20,19 +21,11 @@ class StockApiServiceKtorImpl @Inject constructor(
     private val client: HttpClient
 ) : StockApiService {
 
-    override suspend fun addStock(
-        productId: UUID,
-        quantity: BigDecimal
-    ): Either<StockApiError, Unit> {
+    override suspend fun addStock(stockAddApiDto: StockAddApiDto): Either<StockApiError, Unit> {
         return try {
             client.post("stocks/add") {
                 contentType(ContentType.Application.Json)
-                setBody(
-                    StockApiDto(
-                        productId = productId,
-                        quantity = quantity
-                    )
-                )
+                setBody(stockAddApiDto)
             }
             Unit.right()
 
@@ -41,19 +34,11 @@ class StockApiServiceKtorImpl @Inject constructor(
         }
     }
 
-    override suspend fun removeStock(
-        productId: UUID,
-        quantity: BigDecimal
-    ): Either<StockApiError, Unit> {
+    override suspend fun removeStock(stockRemoveApiDto: StockRemoveApiDto): Either<StockApiError, Unit> {
         return try {
             client.post("stocks/remove") {
                 contentType(ContentType.Application.Json)
-                setBody(
-                    StockApiDto(
-                        productId = productId,
-                        quantity = quantity
-                    )
-                )
+                setBody(stockRemoveApiDto)
             }
             Unit.right()
 

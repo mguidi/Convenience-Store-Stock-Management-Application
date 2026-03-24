@@ -1,4 +1,4 @@
-package com.convenience.store.stocks.data.services
+package com.convenience.store.products.data.services
 
 import android.content.Context
 import androidx.work.Constraints
@@ -6,26 +6,26 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.convenience.store.stocks.data.workers.StockSyncWorker
-import com.convenience.store.stocks.domain.services.StockSyncService
+import com.convenience.store.products.data.workers.ProductSyncWorker
+import com.convenience.store.products.domain.services.ProductSyncService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class StockSyncServiceImpl @Inject constructor(
+class ProductSyncServiceImpl @Inject constructor(
     @ApplicationContext private val context: Context
-) : StockSyncService {
+) : ProductSyncService {
 
     override fun scheduleSync() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val syncRequest = OneTimeWorkRequestBuilder<StockSyncWorker>()
+        val syncRequest = OneTimeWorkRequestBuilder<ProductSyncWorker>()
             .setConstraints(constraints)
             .build()
 
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "stock_sync",
+            "product_sync",
             ExistingWorkPolicy.APPEND,
             syncRequest
         )

@@ -2,6 +2,7 @@ package com.convenience.store.products.ui.di
 
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.repositories.ProductRepository
+import com.convenience.store.products.domain.services.ProductSyncService
 import com.convenience.store.products.domain.usecases.ProductAddUseCase
 import com.convenience.store.products.domain.usecases.ProductAddUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
@@ -19,9 +20,10 @@ object ProductsUiModule {
     @Singleton
     fun provideProductAddUseCase(
         uuidService: UuidService,
+        productSyncService: ProductSyncService,
         productRepository: ProductRepository
     ): ProductAddUseCase {
-        return ProductAddUseCaseImpl(uuidService, productRepository)
+        return ProductAddUseCaseImpl(uuidService, productSyncService, productRepository)
     }
 
     @Provides

@@ -1,7 +1,7 @@
 package com.convenience.store.stocks.data.di
 
-import com.convenience.store.stocks.data.datasources.StockApiService
-import com.convenience.store.stocks.data.datasources.StockApiServiceMockImpl
+import com.convenience.store.stocks.data.datasources.remote.StockApiService
+import com.convenience.store.stocks.data.datasources.remote.StockApiServiceMockImpl
 import com.convenience.store.stocks.data.repositories.StockRepositoryImpl
 import com.convenience.store.stocks.data.services.StockSyncServiceImpl
 import com.convenience.store.stocks.domain.repositories.StockRepository

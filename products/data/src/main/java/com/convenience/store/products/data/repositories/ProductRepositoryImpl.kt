@@ -13,9 +13,10 @@ import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductAddEvent
-import com.convenience.store.products.data.datasources.ProductDao
-import com.convenience.store.products.data.models.toDomain
-import com.convenience.store.products.data.models.toDto
+import com.convenience.store.core.domain.services.UuidService
+import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.models.local.toDomain
+import com.convenience.store.products.data.models.local.toDto
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class ProductRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
     private val eventLogEntityDao: EventLogDao,
-    private val productEntityDao: ProductDao
+    private val productEntityDao: ProductDao,
+    private val uuidService: UuidService,
 ) : ProductRepository {
 
     override suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit> {
@@ -45,8 +47,8 @@ class ProductRepositoryImpl @Inject constructor(
                     product.supplierId,
                 )
                 val event = EventLogDto(
+                    id = uuidService.createSortableUuid(),
                     type = ProductAddEvent.NAME,
-                    dataId = product.id,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogEntityDao.insert(event)

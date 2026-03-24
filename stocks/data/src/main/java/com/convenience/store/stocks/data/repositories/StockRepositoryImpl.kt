@@ -8,10 +8,11 @@ import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.StockAddEvent
 import com.convenience.store.core.domain.events.StockRemoveEvent
-import com.convenience.store.stocks.data.datasources.StockDao
-import com.convenience.store.stocks.data.models.StockDto
-import com.convenience.store.stocks.data.models.toDomain
-import com.convenience.store.stocks.data.models.toDto
+import com.convenience.store.core.domain.services.UuidService
+import com.convenience.store.stocks.data.datasources.local.StockDao
+import com.convenience.store.stocks.data.models.local.StockDto
+import com.convenience.store.stocks.data.models.local.toDomain
+import com.convenience.store.stocks.data.models.local.toDto
 import com.convenience.store.stocks.domain.entities.Stock
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.repositories.StockRepository
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class StockRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
     private val stockEntityDao: StockDao,
-    private val eventLogEntityDao: EventLogDao
+    private val eventLogEntityDao: EventLogDao,
+    private val uuidService: UuidService,
 ) : StockRepository {
 
     override fun getStockById(productId: UUID): Flow<Stock?> {
@@ -44,8 +46,8 @@ class StockRepositoryImpl @Inject constructor(
                 val eventPayload = StockAddEvent(productId, quantity)
 
                 val event = EventLogDto(
+                    id = uuidService.createSortableUuid(),
                     type = StockAddEvent.NAME,
-                    dataId = productId,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogEntityDao.insert(event)
@@ -65,8 +67,8 @@ class StockRepositoryImpl @Inject constructor(
                 val eventPayload = StockRemoveEvent(productId, quantity)
 
                 val event = EventLogDto(
+                    id = uuidService.createSortableUuid(),
                     type = StockRemoveEvent.NAME,
-                    dataId = productId,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogEntityDao.insert(event)
