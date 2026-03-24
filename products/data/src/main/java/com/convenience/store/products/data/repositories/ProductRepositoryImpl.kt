@@ -1,6 +1,7 @@
 package com.convenience.store.products.data.repositories
 
 import android.util.Log
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -15,12 +16,17 @@ import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductAddEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.local.toDomain
 import com.convenience.store.products.data.models.local.toDto
+import com.convenience.store.products.data.models.remote.toDto
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -28,15 +34,16 @@ import javax.inject.Inject
 
 class ProductRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
-    private val eventLogEntityDao: EventLogDao,
-    private val productEntityDao: ProductDao,
+    private val eventLogDao: EventLogDao,
+    private val productDao: ProductDao,
+    private val productApiService: ProductApiService,
     private val uuidService: UuidService,
 ) : ProductRepository {
 
     override suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit> {
         return try {
             database.withTransaction {
-                productEntityDao.insert(product.toDto())
+                productDao.insert(product.toDto())
                 val eventPayload = ProductAddEvent(
                     product.id,
                     product.name,
@@ -51,7 +58,7 @@ class ProductRepositoryImpl @Inject constructor(
                     type = ProductAddEvent.NAME,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
-                eventLogEntityDao.insert(event)
+                eventLogDao.insert(event)
             }
             Unit.right()
 
@@ -64,14 +71,30 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getProductById(productId: UUID): Flow<Product?> {
-        return productEntityDao.getProductById(productId).map { it?.toDomain() }
+    override fun getProductById(productId: UUID): Flow<Product?> = flow {
+        val localProduct = productDao.getProductById(productId).firstOrNull()
+        if (localProduct != null) {
+            emit(localProduct.toDomain())
+        }
+
+        val remoteResult = try {
+            productApiService.getProductById(productId)
+        } catch (e: Exception) {
+            null
+        }
+
+        remoteResult?.onRight { apiDto ->
+            productDao.insertOrUpdateProduct(apiDto.toDto())
+        }
+
+        emitAll(productDao.getProductById(productId).map { it?.toDomain() })
     }
 
     override fun getProductByBarcode(barcode: String): Flow<Product?> {
-        return productEntityDao.getProductByBarcode(barcode).map { it?.toDomain() }
+        return productDao.getProductByBarcode(barcode).map { it?.toDomain() }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun getProductsStream(): Flow<PagingData<Product>> {
         return Pager(
             config = PagingConfig(
@@ -79,13 +102,19 @@ class ProductRepositoryImpl @Inject constructor(
                 enablePlaceholders = false,
                 prefetchDistance = 5
             ),
-            pagingSourceFactory = { productEntityDao.getProductsPaged() }
+            remoteMediator = ProductRemoteMediator(
+                database = database,
+                productDao = productDao,
+                productApiService = productApiService
+            ),
+            pagingSourceFactory = { productDao.getProductsPaged() }
         ).flow
             .map { pagingData ->
                 pagingData.map { entity -> entity.toDomain() }
             }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun getProductsByCategoryStream(categoryId: UUID): Flow<PagingData<Product>> {
         return Pager(
             config = PagingConfig(
@@ -93,7 +122,13 @@ class ProductRepositoryImpl @Inject constructor(
                 enablePlaceholders = false,
                 prefetchDistance = 5
             ),
-            pagingSourceFactory = { productEntityDao.getProductsByCategoryPaged(categoryId) }
+            remoteMediator = ProductRemoteMediator(
+                database = database,
+                productDao = productDao,
+                productApiService = productApiService,
+                categoryId = categoryId
+            ),
+            pagingSourceFactory = { productDao.getProductsByCategoryPaged(categoryId) }
         ).flow
             .map { pagingData ->
                 pagingData.map { entity -> entity.toDomain() }

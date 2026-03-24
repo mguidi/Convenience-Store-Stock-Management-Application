@@ -3,23 +3,15 @@ package com.convenience.store.assessment.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.convenience.store.assessment.database.AppDatabase
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.products.data.datasources.local.ProductDao
-import com.convenience.store.products.data.models.local.ProductDto
 import com.convenience.store.stocks.data.datasources.local.StockDao
-import com.convenience.store.stocks.data.models.local.StockDto
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.util.UUID
 import javax.inject.Singleton
 
 @Module
@@ -29,25 +21,23 @@ abstract class AppModule {
     companion object {
         @Provides
         fun provideEventLogEntityDao(db: AppDatabase): EventLogDao {
-            return db.eventLogEntityDao()
+            return db.eventLogDao()
         }
 
         @Provides
         fun provideStockEntityDao(db: AppDatabase): StockDao {
-            return db.stockEntityDao()
+            return db.stockDao()
         }
 
         @Provides
         fun provideProductEntityDao(db: AppDatabase): ProductDao {
-            return db.productEntityDao()
+            return db.productDao()
         }
 
         @Singleton
         @Provides
         fun provideAppDatabase(
             @ApplicationContext context: Context,
-            productEntityDaoProvider: javax.inject.Provider<ProductDao>,
-            stockEntityDaoProvider: javax.inject.Provider<StockDao>,
         ): AppDatabase {
             return Room.databaseBuilder(
                 context,
@@ -55,17 +45,6 @@ abstract class AppModule {
                 "app_database"
             )
                 .fallbackToDestructiveMigration(false) // Utile in fase di sviluppo
-                .addCallback(object : RoomDatabase.Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            seedDatabase(
-                                productEntityDaoProvider.get(),
-                                stockEntityDaoProvider.get()
-                            )
-                        }
-                    }
-                })
                 .build()
         }
 
@@ -75,45 +54,6 @@ abstract class AppModule {
             return appDatabase
         }
 
-        private suspend fun seedDatabase(
-            productEntityDao: ProductDao,
-            stockEntityDao: StockDao
-        ) {
-            val initialProducts = listOf(
-                ProductDto(
-                    id = UUID.fromString("019d1d3d-ed99-7be7-9e8c-d74fd0d83d97"),
-                    name = "Organic Milk",
-                    description = "Fresh organic whole milk from local farms. 1 Gallon.",
-                    price = BigDecimal("4.99"),
-                    barcode = "1234567890123",
-                    categoryId = UUID.randomUUID(),
-                    supplierId = UUID.randomUUID(),
-                ),
-                ProductDto(
-                    id = UUID.fromString("4f7edd9a-236a-4921-b720-dbe451646a0f"),
-                    name = "Wheat Bread",
-                    description = "Whole wheat sliced bread. No preservatives.",
-                    price = BigDecimal("3.49"),
-                    barcode = "9876543210987",
-                    categoryId = UUID.randomUUID(),
-                    supplierId = UUID.randomUUID(),
-                )
-            )
-            productEntityDao.insertAll(initialProducts)
-
-
-            val initialStock = listOf(
-                StockDto(
-                    productId = UUID.fromString("019d1d3d-ed99-7be7-9e8c-d74fd0d83d97"),
-                    quantity = BigDecimal("10")
-                ),
-                StockDto(
-                    productId = UUID.fromString("4f7edd9a-236a-4921-b720-dbe451646a0f"),
-                    quantity = BigDecimal("12")
-                )
-            )
-            stockEntityDao.insertAll(initialStock)
-        }
     }
 
 }

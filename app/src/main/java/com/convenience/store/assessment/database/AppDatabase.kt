@@ -21,8 +21,8 @@ import com.convenience.store.stocks.data.models.local.StockDto
 )
 @TypeConverters(UUIDConverter::class, BigDecimalConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun eventLogEntityDao(): EventLogDao
-    abstract fun stockEntityDao(): StockDao
+    abstract fun eventLogDao(): EventLogDao
+    abstract fun stockDao(): StockDao
 
-    abstract fun productEntityDao(): ProductDao
+    abstract fun productDao(): ProductDao
 }

@@ -34,6 +34,7 @@ class StockApiServiceMockImpl @Inject constructor() : StockApiService {
     }
 
     override suspend fun getStockByProductId(productId: UUID): Either<StockApiError, StockApiDto> {
+        delay(2000)
         return StockApiDto(productId, BigDecimal.TEN).right()
     }
 }
