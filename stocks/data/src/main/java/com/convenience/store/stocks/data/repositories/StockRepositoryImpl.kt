@@ -3,6 +3,7 @@ package com.convenience.store.stocks.data.repositories
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
+import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.StockAddEvent
@@ -50,7 +51,7 @@ class StockRepositoryImpl @Inject constructor(
                 eventLogEntityDao.insert(event)
             }
 
-        return Either.Right(Unit)
+        return Unit.right()
     }
 
     override suspend fun removeStock(
@@ -71,6 +72,6 @@ class StockRepositoryImpl @Inject constructor(
                 eventLogEntityDao.insert(event)
             }
 
-        return Either.Right(Unit)
+        return Unit.right()
     }
 }

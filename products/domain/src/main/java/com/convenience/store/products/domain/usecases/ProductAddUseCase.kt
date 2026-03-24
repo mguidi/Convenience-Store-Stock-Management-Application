@@ -1,6 +1,7 @@
 package com.convenience.store.products.domain.usecases
 
 import arrow.core.Either
+import arrow.core.left
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
@@ -44,7 +45,7 @@ class ProductAddUseCaseImpl(
         if (false /* TODO check if categoryId exits*/) errors += ProductError.ValidationError.InvalidCategory
         if (false /* TODO check if supplierId exits*/) errors += ProductError.ValidationError.InvalidSupplier
 
-        if (errors.isNotEmpty()) return Either.Left(errors)
+        if (errors.isNotEmpty()) return errors.left()
 
         val product = Product(
             id = uuidService.createSortableUuid(),

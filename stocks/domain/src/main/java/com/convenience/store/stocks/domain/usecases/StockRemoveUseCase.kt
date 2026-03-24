@@ -1,6 +1,7 @@
 package com.convenience.store.stocks.domain.usecases
 
 import arrow.core.Either
+import arrow.core.left
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.repositories.StockRepository
 import java.math.BigDecimal
@@ -19,7 +20,7 @@ class StockRemoveUseCaseImpl(
         productId: UUID,
         quantity: BigDecimal
     ): Either<StockError, Unit> {
-        if (quantity < BigDecimal.ZERO) return Either.Left(StockError.ValidationError.InvalidQuantity)
+        if (quantity < BigDecimal.ZERO) return StockError.ValidationError.InvalidQuantity.left()
 
         return stockRepository.removeStock(productId, quantity)
     }

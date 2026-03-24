@@ -5,7 +5,6 @@
     <string name="core_action_add">Add</string>
     <string name="core_action_save">Save</string>
     <string name="core_action_back">Back</string>
-    <string name="core_action_success">Operation successful</string>
     <string name="core_unknown_error">Unknown error</string>
     <string name="core_database_error">Database error</string>
 </resources>

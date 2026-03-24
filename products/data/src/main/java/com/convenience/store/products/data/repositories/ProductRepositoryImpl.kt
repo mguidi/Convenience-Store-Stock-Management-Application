@@ -8,6 +8,8 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductAddEvent
@@ -49,14 +51,14 @@ class ProductRepositoryImpl @Inject constructor(
                 )
                 eventLogEntityDao.insert(event)
             }
-            Either.Right(Unit)
+            Unit.right()
 
         } catch (e: android.database.sqlite.SQLiteConstraintException) {
             Log.w("ProductRepository", "Product already exists", e)
-            Either.Left(ProductError.RepositoryError.AlreadyExists)
+            ProductError.RepositoryError.AlreadyExists.left()
         } catch (e: Exception) {
             Log.e("ProductRepository", "Generic error", e)
-            Either.Left(ProductError.RepositoryError.DatabaseError)
+            ProductError.RepositoryError.DatabaseError.left()
         }
     }
 

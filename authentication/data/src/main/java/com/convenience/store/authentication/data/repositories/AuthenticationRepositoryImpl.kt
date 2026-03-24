@@ -1,6 +1,8 @@
 package com.convenience.store.authentication.data.repositories
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.convenience.store.authentication.domain.entities.AuthenticationError
 import com.convenience.store.authentication.domain.entities.AuthenticationState
 import com.convenience.store.authentication.domain.repositories.AuthenticationRepository
@@ -22,15 +24,15 @@ class AuthenticationRepositoryImpl @Inject constructor() : AuthenticationReposit
         delay(2000)
         if (username == "admin" && password == "password") {
             _authenticationState.value = AuthenticationState.Authenticated(id = "1", username)
-            return Either.Right(Unit)
+            return Unit.right()
 
         } else {
-            return Either.Left(AuthenticationError.InvalidCredential)
+            return AuthenticationError.InvalidCredential.left()
         }
     }
 
     override suspend fun logout(): Either<Unit, Unit> {
         delay(2000)
-        return Either.Right(Unit)
+        return Unit.right()
     }
 }

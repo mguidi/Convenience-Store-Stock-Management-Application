@@ -35,4 +35,15 @@ android {
 dependencies {
     api(project(":core:domain"))
     api(libs.androidx.paging.common)
+
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
+}
+
+// Necessario per abilitare JUnit 5
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
