@@ -3,9 +3,13 @@ package com.convenience.store.products.data.workers
 import android.content.Context
 import androidx.core.content.edit
 import androidx.hilt.work.HiltWorker
+import androidx.room.RoomDatabase
+import androidx.room.withTransaction
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.convenience.store.core.data.datasources.EventLogDao
+import com.convenience.store.core.data.datasources.EventLogOffsetDao
+import com.convenience.store.core.data.models.EventLogOffsetDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.remote.ProductCreateApiDto
@@ -16,43 +20,40 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
+/**
+ * Worker to sync the products with the server.
+ */
 @HiltWorker
 class ProductSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    private val database: RoomDatabase,
     private val eventLogDao: EventLogDao,
+    private val eventLogOffsetDao: EventLogOffsetDao,
     private val productApiService: ProductApiService
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
-        const val SHARED_PREF_NAME = "ProductSyncWorker"
-        const val LAST_PROCESSED_ID_KEY = "lastProcessedId"
+        const val CONSUMER = "ProductSyncWorker"
     }
 
     private val _json = Json { ignoreUnknownKeys = true }
 
     override suspend fun doWork(): Result {
-        val sharedPref =
-            applicationContext.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        val offset = eventLogOffsetDao.getEventLogOffsetForConsumer(CONSUMER)
 
-        val events =
-            if (sharedPref.contains(LAST_PROCESSED_ID_KEY)) {
-                val lastProcessedId = UUID.fromString(
-                    sharedPref
-                        .getString(LAST_PROCESSED_ID_KEY, "")
-                )
-                eventLogDao.getEventsAfter(lastProcessedId).first()
-            } else {
-                eventLogDao.getEvents().first()
-            }
+        val events = offset?.let {
+            eventLogDao.getEventsAfter(it.lastProcessedId).first()
+        } ?: eventLogDao.getEvents().first()
 
 
         var allSuccess = true
         for (event in events) {
             val syncResult = when (event.type) {
                 ProductCreateEvent.NAME -> {
+                    //region call to the service to create the product
                     val data = _json.decodeFromString<ProductCreateEventDto>(event.payload)
-                    productApiService.createProduct(
+                    val result = productApiService.createProduct(
                         ProductCreateApiDto(
                             requestId = event.id,
                             id = data.id,
@@ -64,6 +65,15 @@ class ProductSyncWorker @AssistedInject constructor(
                             supplierId = data.supplierId
                         )
                     )
+                    //endregion
+
+                    //region on success update of the last processed event id
+                    result.onRight {
+                        database.withTransaction {
+                            eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
+                        }
+                    }
+                    //endregion
                 }
 
                 else -> null
@@ -75,10 +85,6 @@ class ProductSyncWorker @AssistedInject constructor(
                     break
                 }
             }
-        }
-
-        sharedPref.edit(commit = true) {
-            putString(LAST_PROCESSED_ID_KEY, events.last().id.toString())
         }
 
         return if (allSuccess) Result.success() else Result.retry()

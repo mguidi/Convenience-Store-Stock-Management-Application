@@ -8,7 +8,9 @@ import com.convenience.store.core.data.datasources.EventLogOffsetDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.data.models.EventLogOffsetDto
 import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
 import com.convenience.store.products.data.models.local.ProductDto
+import com.convenience.store.products.data.models.local.ProductRemoteKeyDto
 import com.convenience.store.stocks.data.datasources.local.StockDao
 import com.convenience.store.stocks.data.models.local.StockDto
 
@@ -17,7 +19,8 @@ import com.convenience.store.stocks.data.models.local.StockDto
         EventLogDto::class,
         EventLogOffsetDto::class,
         StockDto::class,
-        ProductDto::class
+        ProductDto::class,
+        ProductRemoteKeyDto::class
     ],
     version = 1,
     exportSchema = false
@@ -31,5 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun stockDao(): StockDao
 
     abstract fun productDao(): ProductDao
+
+    abstract fun productRemoteKeyDao(): ProductRemoteKeyDao
 
 }

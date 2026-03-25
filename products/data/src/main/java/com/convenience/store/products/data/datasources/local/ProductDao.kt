@@ -16,10 +16,10 @@ interface ProductDao {
     suspend fun insert(product: ProductDto)
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertOrUpdateProduct(product: ProductDto)
+    suspend fun insertOrUpdate(product: ProductDto)
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertAll(products: List<ProductDto>)
+    suspend fun insertOrUpdateAll(products: List<ProductDto>)
 
     @Query("SELECT * FROM products WHERE id = :productId")
     fun getProductById(productId: UUID): Flow<ProductDto?>
@@ -30,6 +30,6 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE categoryId = :categoryId")
     fun getProductsByCategoryPaged(categoryId: UUID): PagingSource<Int, ProductDto>
 
-    @Query("SELECT * FROM products ORDER BY name ASC")
+    @Query("SELECT * FROM products ORDER by id ASC")
     fun getProductsPaged(): PagingSource<Int, ProductDto>
 }

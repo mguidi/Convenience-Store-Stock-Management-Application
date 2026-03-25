@@ -11,6 +11,9 @@ import com.convenience.store.stocks.domain.services.StockSyncService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * This class is responsible for scheduling the stock sync worker.
+ */
 class StockSyncServiceImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : StockSyncService {

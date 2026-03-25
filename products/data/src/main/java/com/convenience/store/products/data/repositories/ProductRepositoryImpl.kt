@@ -16,6 +16,7 @@ import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.local.toDomain
 import com.convenience.store.products.data.models.events.toDto
@@ -33,10 +34,14 @@ import kotlinx.serialization.json.Json
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * This class is responsible for managing the products
+ */
 class ProductRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
     private val eventLogDao: EventLogDao,
     private val productDao: ProductDao,
+    private val productRemoteKeyDao: ProductRemoteKeyDao,
     private val productApiService: ProductApiService,
     private val uuidService: UuidService,
 ) : ProductRepository {
@@ -44,6 +49,7 @@ class ProductRepositoryImpl @Inject constructor(
     override suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit> {
         return try {
             database.withTransaction {
+                //region insert the product on the local database
                 productDao.insert(product.toDto())
                 val eventPayload = ProductCreateEvent(
                     product.id,
@@ -54,12 +60,16 @@ class ProductRepositoryImpl @Inject constructor(
                     product.categoryId,
                     product.supplierId,
                 )
+                //endregion
+
+                //region store the event in the event log
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
                     type = ProductCreateEvent.NAME,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogDao.insert(event)
+                //endregion
             }
             Unit.right()
 
@@ -73,21 +83,28 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override fun getProductById(productId: UUID): Flow<Product?> = flow {
+        //region get the product from the local database and emit the value
         val localProduct = productDao.getProductById(productId).firstOrNull()
         if (localProduct != null) {
             emit(localProduct.toDomain())
         }
+        //endregion
 
+        //region get the product from the remote service
         val remoteResult = try {
             productApiService.getProductById(productId)
         } catch (e: Exception) {
             null
         }
+        //endregion
 
+        //region on success update the product on the local database
         remoteResult?.onRight { remoteProduct ->
-            if (remoteProduct.version > (localProduct?.version ?: -1)) productDao.insertOrUpdateProduct(remoteProduct.toDto())
+            if (remoteProduct.version > (localProduct?.version ?: -1)) productDao.insertOrUpdate(remoteProduct.toDto())
         }
+        //endregion
 
+        // get the product from the local database updated by the remote service
         emitAll(productDao.getProductById(productId).map { it?.toDomain() })
     }
 
@@ -106,6 +123,7 @@ class ProductRepositoryImpl @Inject constructor(
             remoteMediator = ProductRemoteMediator(
                 database = database,
                 productDao = productDao,
+                productRemoteKeyDao = productRemoteKeyDao,
                 productApiService = productApiService
             ),
             pagingSourceFactory = { productDao.getProductsPaged() }
@@ -126,6 +144,7 @@ class ProductRepositoryImpl @Inject constructor(
             remoteMediator = ProductRemoteMediator(
                 database = database,
                 productDao = productDao,
+                productRemoteKeyDao = productRemoteKeyDao,
                 productApiService = productApiService,
                 categoryId = categoryId
             ),

@@ -11,6 +11,9 @@ import com.convenience.store.products.domain.services.ProductSyncService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * This class is responsible for scheduling the product sync worker.
+ */
 class ProductSyncServiceImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : ProductSyncService {

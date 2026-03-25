@@ -4,19 +4,18 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.convenience.store.stocks.domain.entities.Stock
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.usecases.StockAddUseCase
 import com.convenience.store.stocks.domain.usecases.StockGetByIdUseCase
 import com.convenience.store.stocks.domain.usecases.StockRemoveUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -33,13 +32,13 @@ class StockManagementViewModel @Inject constructor(
         MutableStateFlow<StockManagementScreenState>(StockManagementScreenState.Init)
     val uiState = _uiState.asStateFlow()
 
-    private val _productId = MutableStateFlow < UUID ? > (null)
+    private val _productId = MutableStateFlow<UUID?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val currentStock = _productId
         .filterNotNull()
         .flatMapLatest { id ->
-            stockGetByIdUseCase(id)
+            stockGetByIdUseCase(id).onStart { emit(null) }
         }
         .stateIn(
             scope = viewModelScope,
@@ -63,6 +62,7 @@ class StockManagementViewModel @Inject constructor(
                 ifLeft = { _uiState.value = StockManagementScreenState.Error(listOf(it)) },
                 ifRight = {
                     _uiState.value = StockManagementScreenState.Success
+                    quantityState.clearText()
                 }
             )
         }
@@ -85,6 +85,7 @@ class StockManagementViewModel @Inject constructor(
     }
 
     fun reset() {
+        _productId.value = null
         _uiState.value = StockManagementScreenState.Init
         quantityState.clearText()
     }

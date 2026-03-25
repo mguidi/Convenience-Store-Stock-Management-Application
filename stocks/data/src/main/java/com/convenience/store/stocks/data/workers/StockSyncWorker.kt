@@ -22,6 +22,9 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 
+/**
+ * Worker to sync the stock quantity with the server.
+ */
 @HiltWorker
 class StockSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
@@ -51,14 +54,20 @@ class StockSyncWorker @AssistedInject constructor(
         for (event in events) {
             val syncResult = when (event.type) {
                 StockAddEvent.NAME -> {
+                    //region call to the service to add the stock
                     val data = _json.decodeFromString<StockAddEventDto>(event.payload)
-                    stockApiService.addStock(
+                    val result = stockApiService.addStock(
                         StockAddApiDto(
                             requestId = event.id,
                             productId = data.productId,
                             quantity = data.quantityChange
                         )
-                    ).onRight {
+                    )
+                    //endregion
+
+                    //region on success update the stock quantity on the local database in transaction
+                    // with the update of the last processed event id
+                    result.onRight {
                         database.withTransaction {
                             stockDao.addStockQuantitySync(
                                 productId = data.productId,
@@ -71,17 +80,24 @@ class StockSyncWorker @AssistedInject constructor(
                             eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
                         }
                     }
+                    //endregion
                 }
 
                 StockRemoveEvent.NAME -> {
+                    //region call to the service to add the stock
                     val data = _json.decodeFromString<StockRemoveEventDto>(event.payload)
-                    stockApiService.removeStock(
+                    val result = stockApiService.removeStock(
                         StockRemoveApiDto(
                             requestId = event.id,
                             productId = data.productId,
                             quantity = data.quantityChange.negate()
                         )
-                    ).onRight {
+                    )
+                    //endregion
+
+                    //region on success update the stock quantity on the local database in transaction
+                    // with the update of the last processed event id
+                    result.onRight {
                         database.withTransaction {
                             stockDao.addStockQuantitySync(
                                 productId = data.productId,
@@ -94,6 +110,7 @@ class StockSyncWorker @AssistedInject constructor(
                             eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
                         }
                     }
+                    //endregion
                 }
 
                 else -> null

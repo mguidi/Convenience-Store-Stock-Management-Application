@@ -27,6 +27,9 @@ import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * This class is responsible for managing the stock quantity.
+ */
 class StockRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
     private val eventLogDao: EventLogDao,
@@ -36,17 +39,22 @@ class StockRepositoryImpl @Inject constructor(
 ) : StockRepository {
 
     override fun getStockById(productId: UUID): Flow<Stock?> = flow {
+        //region get the stock from the local database and emit the value
         val localStock = stockDao.getStockByProductId(productId).firstOrNull()
         if (localStock != null) {
             emit(localStock.toDomain())
         }
+        //endregion
 
+        //region get the stock from the remote service
         val remoteResult = try {
             stockApiServiceo.getStockByProductId(productId)
         } catch (e: Exception) {
             null
         }
+        //endregion
 
+        //region on success update the stock quantity on the local database
         remoteResult?.onRight { remoteStock ->
             database
                 .withTransaction {
@@ -61,7 +69,9 @@ class StockRepositoryImpl @Inject constructor(
                     )
                 }
         }
+        //endregion
 
+        // get the stock from the local database updated by the remote service
         emitAll(stockDao.getStockByProductId(productId).map { it?.toDomain() })
     }
 
@@ -71,19 +81,22 @@ class StockRepositoryImpl @Inject constructor(
     ): Either<StockError, Unit> {
         database
             .withTransaction {
+                //region update the stock quantity on the local database
                 val result = stockDao.addStockQuantityNotSync(productId, quantityChange)
                 if (result == 0) stockDao.insertOrUpdateStock(
                     StockDto(productId, quantityChange, BigDecimal.ZERO)
                 )
+                //endregion
 
+                //region store the event in the event log
                 val eventPayload = StockAddEvent(productId, quantityChange)
-
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
                     type = StockAddEvent.NAME,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogDao.insert(event)
+                //endregion
             }
 
         return Unit.right()
@@ -95,6 +108,7 @@ class StockRepositoryImpl @Inject constructor(
     ): Either<StockError, Unit> {
         database
             .withTransaction {
+                //region update the stock quantity on the local database
                 val result = stockDao.addStockQuantityNotSync(productId, quantityChange.negate())
                 if (result == 0) stockDao.insertOrUpdateStock(
                     StockDto(
@@ -103,15 +117,17 @@ class StockRepositoryImpl @Inject constructor(
                         BigDecimal.ZERO
                     )
                 )
+                //endregion
 
+                //region store the event in the event log
                 val eventPayload = StockRemoveEvent(productId, quantityChange)
-
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
                     type = StockRemoveEvent.NAME,
                     payload = Json.encodeToString(eventPayload.toDto())
                 )
                 eventLogDao.insert(event)
+                //endregion
             }
 
         return Unit.right()

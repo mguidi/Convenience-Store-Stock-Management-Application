@@ -7,6 +7,7 @@ import com.convenience.store.assessment.database.AppDatabase
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.datasources.EventLogOffsetDao
 import com.convenience.store.products.data.datasources.local.ProductDao
+import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
 import com.convenience.store.stocks.data.datasources.local.StockDao
 import dagger.Module
 import dagger.Provides
@@ -38,6 +39,11 @@ abstract class AppModule {
         @Provides
         fun provideProductEntityDao(db: AppDatabase): ProductDao {
             return db.productDao()
+        }
+
+        @Provides
+        fun provideProductRemoteKeyDao(db: AppDatabase): ProductRemoteKeyDao {
+            return db.productRemoteKeyDao()
         }
 
         @Singleton

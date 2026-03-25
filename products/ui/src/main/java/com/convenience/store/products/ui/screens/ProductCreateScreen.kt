@@ -63,7 +63,7 @@ fun ProductCreateScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalResources.current
 
-    val onBackClickClean = {
+    val onBackClickReset = {
         onBackClick()
         viewModel.reset()
     }
@@ -76,7 +76,7 @@ fun ProductCreateScreen(
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is ProductCreateScreenState.Success -> {
-                onBackClickClean()
+                onBackClickReset()
             }
 
             is ProductCreateScreenState.Error -> {
@@ -126,7 +126,7 @@ fun ProductCreateScreen(
         selectedSupplier = selectedSupplier,
         onCategorySelected = viewModel::onCategorySelected,
         onSupplierSelected = viewModel::onSupplierSelected,
-        onBackClick = onBackClickClean,
+        onBackClick = onBackClickReset,
         onSaveClick = {
             viewModel.save()
         }

@@ -12,5 +12,5 @@ interface ProductApiService {
 
     suspend fun getProductById(id: UUID): Either<ProductApiError, ProductApiDto>
 
-    suspend fun getProducts(): Either<ProductApiError, List<ProductApiDto>>
+    suspend fun getProducts(page: Int, pageSize: Int): Either<ProductApiError, List<ProductApiDto>>
 }

@@ -65,16 +65,18 @@ fun StockManagementScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalResources.current
 
+    val onBackClickReset = {
+        onBackClick()
+        viewModel.reset()
+    }
+
     LaunchedEffect(productId) {
         viewModel.loadStock(productId)
     }
 
     LaunchedEffect(uiState) {
         val state = uiState
-        if (state is StockManagementScreenState.Success) {
-            viewModel.reset()
-
-        } else if (state is StockManagementScreenState.Error) {
+        if (state is StockManagementScreenState.Error) {
             val message = state.errors.joinToString("\n") { error ->
                 when (error) {
                     is StockError.ValidationError.InvalidQuantity -> context.getString(R.string.stocks_errors_invalid_quantity)
@@ -93,7 +95,7 @@ fun StockManagementScreen(
         adjustQuantityState = viewModel.quantityState,
         isLoading = uiState is StockManagementScreenState.Loading,
         snackbarHostState = snackbarHostState,
-        onBackClick = onBackClick,
+        onBackClick = onBackClickReset,
         onAddClick = viewModel::addStock,
         onRemoveClick = viewModel::removeStock
     )
