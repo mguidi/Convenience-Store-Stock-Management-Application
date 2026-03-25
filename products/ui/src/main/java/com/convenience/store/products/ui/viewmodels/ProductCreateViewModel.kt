@@ -43,19 +43,19 @@ class ProductCreateViewModel @Inject constructor(
         MutableStateFlow(ProductCreateScreenState.Init)
     val uiState = _uiState.asStateFlow()
 
-    private var isInitialized = false
+    private var _isInitialized = false
 
     fun init() {
-        if (!isInitialized) {
+        if (!_isInitialized) {
             clearFields()
             loadData()
-            isInitialized = true
+            _isInitialized = true
         }
     }
 
     fun reset() {
         clearFields()
-        isInitialized = false
+        _isInitialized = false
         _uiState.value = ProductCreateScreenState.Init
     }
 

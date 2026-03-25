@@ -1,4 +1,4 @@
-package com.convenience.store.stocks.data.models.local
+package com.convenience.store.stocks.data.models.events
 
 import com.convenience.store.core.data.serializers.BigDecimalSerializer
 import com.convenience.store.core.data.serializers.UuidSerializer
@@ -10,10 +10,10 @@ import java.util.UUID
 @Serializable
 internal data class StockAddEventDto(
     @Serializable(with = UuidSerializer::class) val productId: UUID,
-    @Serializable(with = BigDecimalSerializer::class) val quantity: BigDecimal,
+    @Serializable(with = BigDecimalSerializer::class) val quantityChange: BigDecimal,
 )
 
 internal fun StockAddEvent.toDto() = StockAddEventDto(
     productId = productId,
-    quantity = quantity
+    quantityChange = quantity
 )

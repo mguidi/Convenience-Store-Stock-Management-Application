@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.convenience.store.assessment.database.AppDatabase
 import com.convenience.store.core.data.datasources.EventLogDao
+import com.convenience.store.core.data.datasources.EventLogOffsetDao
 import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.stocks.data.datasources.local.StockDao
 import dagger.Module
@@ -22,6 +23,11 @@ abstract class AppModule {
         @Provides
         fun provideEventLogEntityDao(db: AppDatabase): EventLogDao {
             return db.eventLogDao()
+        }
+
+        @Provides
+        fun provideEventLogOffsetDao(db: AppDatabase): EventLogOffsetDao {
+            return db.eventLogOffsetDao()
         }
 
         @Provides

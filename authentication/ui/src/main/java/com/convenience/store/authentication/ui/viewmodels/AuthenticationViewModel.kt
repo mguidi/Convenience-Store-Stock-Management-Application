@@ -25,7 +25,7 @@ class AuthenticationViewModel @Inject constructor(
         MutableStateFlow(AuthenticationScreenState.Init)
     val uiState = _uiState.asStateFlow()
 
-    private var isInitialized = false
+    private var _isInitialized = false
 
     fun authenticate() {
         viewModelScope.launch {
@@ -43,9 +43,9 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun init() {
-        if (!isInitialized) {
+        if (!_isInitialized) {
             clearFields()
-            isInitialized = true
+            _isInitialized = true
         }
     }
 

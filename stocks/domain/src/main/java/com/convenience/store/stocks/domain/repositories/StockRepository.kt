@@ -20,17 +20,17 @@ interface StockRepository {
      * Increases the available stock for a specific product.
      *
      * @param productId The unique identifier (UUID) of the product.
-     * @param quantity The amount to be added to the current stock.
+     * @param quantityChange The amount to be added to the current stock.
      * @return An [Either] containing a [StockError] on failure or [Unit] on success.
      */
-    suspend fun addStock(productId: UUID, quantity: BigDecimal): Either<StockError, Unit>
+    suspend fun addStock(productId: UUID, quantityChange: BigDecimal): Either<StockError, Unit>
 
     /**
      * Decreases the available stock for a specific product.
      *
      * @param productId The unique identifier (UUID) of the product.
-     * @param quantity The amount to be removed from the current stock.
+     * @param quantityChange The amount to be removed from the current stock.
      * @return An [Either] containing a [StockError] on failure or [Unit] on success.
      */
-    suspend fun removeStock(productId: UUID, quantity: BigDecimal): Either<StockError, Unit>
+    suspend fun removeStock(productId: UUID, quantityChange: BigDecimal): Either<StockError, Unit>
 }

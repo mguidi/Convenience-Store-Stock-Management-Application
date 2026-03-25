@@ -11,7 +11,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,10 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.ui.R
-import com.convenience.store.products.ui.viewmodels.ProductsViewModel
-import com.convenience.store.stocks.domain.entities.Stock
+import com.convenience.store.products.ui.viewmodels.ProductItemViewModel
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -33,9 +32,9 @@ fun ProductItem(
     onClick: () -> Unit
 ) {
 
-    val viewModel = hiltViewModel<ProductsViewModel>()
+    val viewModel = hiltViewModel<ProductItemViewModel>()
     val stock by viewModel.getStockById(product.id)
-        .collectAsState(initial = null)
+        .collectAsStateWithLifecycle(initialValue = null)
 
     ProductItemInt(
         product,

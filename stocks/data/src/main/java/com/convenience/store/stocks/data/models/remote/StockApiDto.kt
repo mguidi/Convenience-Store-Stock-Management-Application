@@ -11,12 +11,4 @@ import java.util.UUID
 data class StockApiDto(
     @Serializable(with = UuidSerializer::class) val productId: UUID,
     @Serializable(with = BigDecimalSerializer::class) val quantity: BigDecimal,
-    val version: Long
-)
-
-
-fun StockApiDto.toDto() = StockDto(
-    productId = productId,
-    quantity = quantity,
-    version = version
 )

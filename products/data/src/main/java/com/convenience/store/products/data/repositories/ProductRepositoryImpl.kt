@@ -18,6 +18,7 @@ import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.local.toDomain
+import com.convenience.store.products.data.models.events.toDto
 import com.convenience.store.products.data.models.local.toDto
 import com.convenience.store.products.data.models.remote.toDto
 import com.convenience.store.products.domain.entities.Product

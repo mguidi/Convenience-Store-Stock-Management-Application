@@ -9,7 +9,7 @@ import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.remote.ProductCreateApiDto
-import com.convenience.store.products.data.models.local.ProductCreateEventDto
+import com.convenience.store.products.data.models.events.ProductCreateEventDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -29,7 +29,7 @@ class ProductSyncWorker @AssistedInject constructor(
         const val LAST_PROCESSED_ID_KEY = "lastProcessedId"
     }
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val _json = Json { ignoreUnknownKeys = true }
 
     override suspend fun doWork(): Result {
         val sharedPref =
@@ -51,7 +51,7 @@ class ProductSyncWorker @AssistedInject constructor(
         for (event in events) {
             val syncResult = when (event.type) {
                 ProductCreateEvent.NAME -> {
-                    val data = json.decodeFromString<ProductCreateEventDto>(event.payload)
+                    val data = _json.decodeFromString<ProductCreateEventDto>(event.payload)
                     productApiService.createProduct(
                         ProductCreateApiDto(
                             requestId = event.id,

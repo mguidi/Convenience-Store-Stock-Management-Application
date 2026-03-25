@@ -10,8 +10,14 @@ import com.convenience.store.stocks.domain.usecases.StockAddUseCase
 import com.convenience.store.stocks.domain.usecases.StockGetByIdUseCase
 import com.convenience.store.stocks.domain.usecases.StockRemoveUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -23,34 +29,39 @@ class StockManagementViewModel @Inject constructor(
     private val stockRemoveUseCase: StockRemoveUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<StockManagementScreenState>(StockManagementScreenState.Init)
+    private val _uiState =
+        MutableStateFlow<StockManagementScreenState>(StockManagementScreenState.Init)
     val uiState = _uiState.asStateFlow()
 
-    private val _currentStock = MutableStateFlow<Stock?>(null)
-    val currentStock = _currentStock.asStateFlow()
+    private val _productId = MutableStateFlow < UUID ? > (null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentStock = _productId
+        .filterNotNull()
+        .flatMapLatest { id ->
+            stockGetByIdUseCase(id)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     val quantityState = TextFieldState()
 
-    private var productId: UUID? = null
-
     fun loadStock(id: UUID) {
-        productId = id
-        viewModelScope.launch {
-            stockGetByIdUseCase(id).collect {
-                _currentStock.value = it
-            }
-        }
+        _productId.value = id
     }
 
     fun addStock() {
-        val id = productId ?: return
+        val id = _productId.value ?: return
         val amount = quantityState.text.toString().toBigDecimalOrNull() ?: return
-        
+
         viewModelScope.launch {
             _uiState.value = StockManagementScreenState.Loading
             stockAddUseCase(id, amount).fold(
                 ifLeft = { _uiState.value = StockManagementScreenState.Error(listOf(it)) },
-                ifRight = { 
+                ifRight = {
                     _uiState.value = StockManagementScreenState.Success
                 }
             )
@@ -58,14 +69,14 @@ class StockManagementViewModel @Inject constructor(
     }
 
     fun removeStock() {
-        val id = productId ?: return
+        val id = _productId.value ?: return
         val amount = quantityState.text.toString().toBigDecimalOrNull() ?: return
 
         viewModelScope.launch {
             _uiState.value = StockManagementScreenState.Loading
             stockRemoveUseCase(id, amount).fold(
                 ifLeft = { _uiState.value = StockManagementScreenState.Error(listOf(it)) },
-                ifRight = { 
+                ifRight = {
                     _uiState.value = StockManagementScreenState.Success
                     quantityState.clearText()
                 }

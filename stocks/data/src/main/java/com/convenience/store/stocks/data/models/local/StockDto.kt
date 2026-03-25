@@ -9,18 +9,13 @@ import java.util.UUID
 @Entity(tableName = "stocks")
 data class StockDto(
     @PrimaryKey val productId: UUID,
-    val quantity: BigDecimal,
-    val version: Long
+    val quantitySync: BigDecimal,
+    val quantityNotSync: BigDecimal,
 )
 
 
 fun StockDto.toDomain() = Stock(
     productId = productId,
-    quantity = quantity,
-    version = version
+    quantitySync = quantitySync,
+    quantityNotSync = quantityNotSync
 )
-
-//fun Stock.toEntity() = StockEntity(
-//    productId = this.productId,
-//    quantity = this.quantity
-//)

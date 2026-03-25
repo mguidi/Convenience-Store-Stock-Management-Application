@@ -1,4 +1,4 @@
-package com.convenience.store.products.data.models.local
+package com.convenience.store.products.data.models.events
 
 import com.convenience.store.core.data.serializers.BigDecimalSerializer
 import com.convenience.store.core.data.serializers.UuidSerializer

@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.hilt.android)

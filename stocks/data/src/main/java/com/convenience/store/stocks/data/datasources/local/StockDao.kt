@@ -36,14 +36,34 @@ interface StockDao {
     fun getStockByProductId(productId: UUID): Flow<StockDto?>
 
     /**
-     * Updates the stock quantity for a specific product.
+     * Updates the stock quantity sync for a specific product.
+     *
+     * @param productId The unique identifier of the product.
+     * @param newQuantity The new quantity
+     * @return The number of rows updated (1 if successful, 0 if condition not met).
+     */
+    @Query("UPDATE stocks SET quantitySync = :newQuantity WHERE productId = :productId")
+    suspend fun updateStockQuantitySync(productId: UUID, newQuantity: BigDecimal): Int
+
+    /**
+     * Updates the stock quantity sync for a specific product.
      *
      * @param productId The unique identifier of the product.
      * @param quantityChange The amount to add (positive) or subtract (negative).
      * @return The number of rows updated (1 if successful, 0 if condition not met).
      */
-    @Query("UPDATE stocks SET quantity = quantity + :quantityChange WHERE productId = :productId")
-    suspend fun updateStock(productId: UUID, quantityChange: BigDecimal): Int
+    @Query("UPDATE stocks SET quantitySync = quantitySync + :quantityChange WHERE productId = :productId")
+    suspend fun addStockQuantitySync(productId: UUID, quantityChange: BigDecimal): Int
+
+    /**
+     * Updates the stock quantity not sync for a specific product.
+     *
+     * @param productId The unique identifier of the product.
+     * @param quantityChange The amount to add (positive) or subtract (negative).
+     * @return The number of rows updated (1 if successful, 0 if condition not met).
+     */
+    @Query("UPDATE stocks SET quantityNotSync = quantityNotSync + :quantityChange WHERE productId = :productId")
+    suspend fun addStockQuantityNotSync(productId: UUID, quantityChange: BigDecimal): Int
 
 
 }

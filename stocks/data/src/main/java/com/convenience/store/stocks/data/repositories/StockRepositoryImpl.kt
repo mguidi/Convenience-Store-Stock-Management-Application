@@ -11,10 +11,9 @@ import com.convenience.store.core.domain.events.StockRemoveEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.stocks.data.datasources.local.StockDao
 import com.convenience.store.stocks.data.datasources.remote.StockApiService
+import com.convenience.store.stocks.data.models.events.toDto
 import com.convenience.store.stocks.data.models.local.StockDto
 import com.convenience.store.stocks.data.models.local.toDomain
-import com.convenience.store.stocks.data.models.local.toDto
-import com.convenience.store.stocks.data.models.remote.toDto
 import com.convenience.store.stocks.domain.entities.Stock
 import com.convenience.store.stocks.domain.entities.StockError
 import com.convenience.store.stocks.domain.repositories.StockRepository
@@ -49,9 +48,18 @@ class StockRepositoryImpl @Inject constructor(
         }
 
         remoteResult?.onRight { remoteStock ->
-            if (remoteStock.version > (localStock?.version ?: -1)) stockDao.insertOrUpdateStock(
-                remoteStock.toDto()
-            )
+            database
+                .withTransaction {
+                    val newQuantity = remoteStock.quantity
+                    val result = stockDao.updateStockQuantitySync(productId, newQuantity)
+                    if (result == 0) stockDao.insertOrUpdateStock(
+                        StockDto(
+                            productId,
+                            newQuantity,
+                            BigDecimal.ZERO
+                        )
+                    )
+                }
         }
 
         emitAll(stockDao.getStockByProductId(productId).map { it?.toDomain() })
@@ -59,14 +67,16 @@ class StockRepositoryImpl @Inject constructor(
 
     override suspend fun addStock(
         productId: UUID,
-        quantity: BigDecimal
+        quantityChange: BigDecimal
     ): Either<StockError, Unit> {
         database
             .withTransaction {
-                val result = stockDao.updateStock(productId, quantity)
-                if (result == 0) stockDao.insertOrUpdateStock(StockDto(productId, quantity, 0))
+                val result = stockDao.addStockQuantityNotSync(productId, quantityChange)
+                if (result == 0) stockDao.insertOrUpdateStock(
+                    StockDto(productId, quantityChange, BigDecimal.ZERO)
+                )
 
-                val eventPayload = StockAddEvent(productId, quantity)
+                val eventPayload = StockAddEvent(productId, quantityChange)
 
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
@@ -81,14 +91,20 @@ class StockRepositoryImpl @Inject constructor(
 
     override suspend fun removeStock(
         productId: UUID,
-        quantity: BigDecimal
+        quantityChange: BigDecimal
     ): Either<StockError, Unit> {
         database
             .withTransaction {
-                val result = stockDao.updateStock(productId, quantity.negate())
-                if (result == 0) stockDao.insertOrUpdateStock(StockDto(productId, quantity.negate(), 0))
+                val result = stockDao.addStockQuantityNotSync(productId, quantityChange.negate())
+                if (result == 0) stockDao.insertOrUpdateStock(
+                    StockDto(
+                        productId,
+                        quantityChange.negate(),
+                        BigDecimal.ZERO
+                    )
+                )
 
-                val eventPayload = StockRemoveEvent(productId, quantity)
+                val eventPayload = StockRemoveEvent(productId, quantityChange)
 
                 val event = EventLogDto(
                     id = uuidService.createSortableUuid(),
