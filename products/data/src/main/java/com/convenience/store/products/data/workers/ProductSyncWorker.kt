@@ -1,7 +1,6 @@
 package com.convenience.store.products.data.workers
 
 import android.content.Context
-import androidx.core.content.edit
 import androidx.hilt.work.HiltWorker
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
@@ -11,14 +10,17 @@ import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.datasources.EventLogOffsetDao
 import com.convenience.store.core.data.models.EventLogOffsetDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
+import com.convenience.store.core.domain.events.ProductDeleteEvent
+import com.convenience.store.core.domain.events.ProductUpdateEvent
 import com.convenience.store.products.data.datasources.remote.ProductApiService
-import com.convenience.store.products.data.models.remote.ProductCreateApiDto
 import com.convenience.store.products.data.models.events.ProductCreateEventDto
+import com.convenience.store.products.data.models.events.ProductDeleteEventDto
+import com.convenience.store.products.data.models.events.ProductUpdateEventDto
+import com.convenience.store.products.domain.entities.Product
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
-import java.util.UUID
 
 /**
  * Worker to sync the products with the server.
@@ -54,16 +56,62 @@ class ProductSyncWorker @AssistedInject constructor(
                     //region call to the service to create the product
                     val data = _json.decodeFromString<ProductCreateEventDto>(event.payload)
                     val result = productApiService.createProduct(
-                        ProductCreateApiDto(
-                            requestId = event.id,
+                        commandId = event.id,
+                        product = Product(
                             id = data.id,
                             name = data.name,
                             description = data.description,
                             price = data.price,
                             barcode = data.barcode,
                             categoryId = data.categoryId,
-                            supplierId = data.supplierId
+                            supplierId = data.supplierId,
+                            version = 0,
                         )
+                    )
+                    //endregion
+
+                    //region on success update of the last processed event id
+                    result.onRight {
+                        database.withTransaction {
+                            eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
+                        }
+                    }
+                    //endregion
+                }
+
+                ProductUpdateEvent.NAME -> {
+                    //region call to the service to create the product
+                    val data = _json.decodeFromString<ProductUpdateEventDto>(event.payload)
+                    val result = productApiService.updateProduct(
+                        commandId = event.id,
+                        product = Product(
+                            id = data.id,
+                            name = data.name,
+                            description = data.description,
+                            price = data.price,
+                            barcode = data.barcode,
+                            categoryId = data.categoryId,
+                            supplierId = data.supplierId,
+                            version = 0,
+                        )
+                    )
+                    //endregion
+
+                    //region on success update of the last processed event id
+                    result.onRight {
+                        database.withTransaction {
+                            eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
+                        }
+                    }
+                    //endregion
+                }
+
+                ProductDeleteEvent.NAME -> {
+                    //region call to the service to create the product
+                    val data = _json.decodeFromString<ProductDeleteEventDto>(event.payload)
+                    val result = productApiService.deleteProduct(
+                        commandId = event.id,
+                        productId = data.id,
                     )
                     //endregion
 

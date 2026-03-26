@@ -6,7 +6,10 @@ import arrow.core.left
 import arrow.core.right
 import com.convenience.store.products.data.models.remote.ProductApiDto
 import com.convenience.store.products.data.models.remote.ProductApiError
-import com.convenience.store.products.data.models.remote.ProductCreateApiDto
+import com.convenience.store.products.data.models.remote.ProductDeleteApiDto
+import com.convenience.store.products.data.models.remote.toCreateApiDto
+import com.convenience.store.products.data.models.remote.toUpdteApiDto
+import com.convenience.store.products.domain.entities.Product
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -148,24 +151,76 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
     }.toMutableList()
     private val _mutex = Mutex()
 
-    override suspend fun createProduct(productCreateApiDto: ProductCreateApiDto): Either<ProductApiError, Unit> {
+    override suspend fun createProduct(
+        commandId: UUID,
+        product: Product
+    ): Either<ProductApiError, Unit> {
+        val body = product.toCreateApiDto(commandId)
         Log.d(
             "ProductApiService",
-            "createProduct: ${Json.encodeToString(productCreateApiDto)}"
+            "createProduct: ${Json.encodeToString(body)}"
         )
         delay(2000)
 
         _mutex.withLock {
             _allProducts += ProductApiDto(
-                id = productCreateApiDto.id,
-                name = productCreateApiDto.name,
-                description = productCreateApiDto.description,
-                price = productCreateApiDto.price,
-                barcode = productCreateApiDto.barcode,
-                categoryId = productCreateApiDto.categoryId,
-                supplierId = productCreateApiDto.supplierId,
+                id = body.id,
+                name = body.name,
+                description = body.description,
+                price = body.price,
+                barcode = body.barcode,
+                categoryId = body.categoryId,
+                supplierId = body.supplierId,
                 version = 0,
             )
+        }
+
+        return Either.Right(Unit)
+    }
+
+    override suspend fun updateProduct(
+        commandId: UUID,
+        product: Product
+    ): Either<ProductApiError, Unit> {
+        val body = product.toUpdteApiDto(commandId)
+        Log.d(
+            "ProductApiService",
+            "updateProduct: ${Json.encodeToString(body)}"
+        )
+        delay(2000)
+
+        _mutex.withLock {
+            val productApiDto = ProductApiDto(
+                id = body.id,
+                name = body.name,
+                description = body.description,
+                price = body.price,
+                barcode = body.barcode,
+                categoryId = body.categoryId,
+                supplierId = body.supplierId,
+                version = 0,
+            )
+
+            _allProducts.removeIf { it.id == productApiDto.id }
+            _allProducts += productApiDto
+        }
+
+        return Either.Right(Unit)
+    }
+
+    override suspend fun deleteProduct(
+        commandId: UUID,
+        productId: UUID
+    ): Either<ProductApiError, Unit> {
+        val body = ProductDeleteApiDto(commandId, productId)
+        Log.d(
+            "ProductApiService",
+            "deleteProduct: ${Json.encodeToString(body)}"
+        )
+        delay(2000)
+
+        _mutex.withLock {
+            _allProducts.removeIf { it.id == productId }
         }
 
         return Either.Right(Unit)
