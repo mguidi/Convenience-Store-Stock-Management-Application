@@ -10,9 +10,9 @@ import javax.inject.Inject
 class SupplierRepositoryMock @Inject constructor() : SupplierRepository {
 
     private val _suppliers = listOf(
-        Supplier(UUID.randomUUID(), "Global Foods Inc."),
-        Supplier(UUID.randomUUID(), "Local Dairy Farm"),
-        Supplier(UUID.randomUUID(), "Soda Distributing Co.")
+        Supplier(UUID.fromString("019d2616-21ee-78b4-a43c-fef07b5ff7ab"), "Global Foods Inc."),
+        Supplier(UUID.fromString("019d2616-21ee-78f9-a43d-976eddb2f099"), "Local Dairy Farm"),
+        Supplier(UUID.fromString("019d2616-21ee-7943-a43e-b38a2961adb6"), "Soda Distributing Co.")
     )
 
     override fun getSuppliers(): Flow<List<Supplier>> {

@@ -62,7 +62,8 @@ import com.convenience.store.core.ui.R as coreR
 fun ProductsScreen(
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onProductLongClick: (Product) -> Unit
 ) {
     val viewModel: ProductsViewModel = hiltViewModel<ProductsViewModel>()
     val pagingItems = viewModel.products.collectAsLazyPagingItems()
@@ -80,7 +81,8 @@ fun ProductsScreen(
         onCategorySelected = viewModel::onCategorySelected,
         onMenuClick = onMenuClick,
         onAddClick = onAddClick,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onProductLongClick = onProductLongClick
     )
 }
 
@@ -95,7 +97,8 @@ internal fun ProductsScreenInt(
     onCategorySelected: (UUID?) -> Unit,
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    onProductLongClick: (Product) -> Unit
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val showGrid =
@@ -141,12 +144,14 @@ internal fun ProductsScreenInt(
             if (showGrid) {
                 ProductsGridScreen(
                     pagingItems = pagingItems,
-                    onProductClick = onProductClick
+                    onProductClick = onProductClick,
+                    onProductLongClick = onProductLongClick
                 )
             } else {
                 ProductsListScreen(
                     pagingItems = pagingItems,
-                    onProductClick = onProductClick
+                    onProductClick = onProductClick,
+                    onProductLongClick = onProductLongClick
                 )
             }
 
@@ -285,7 +290,8 @@ fun ProductsScreenCompactPreview() {
             onCategorySelected = {},
             onMenuClick = {},
             onAddClick = {},
-            onProductClick = {}
+            onProductClick = {},
+            onProductLongClick = {}
         )
     }
 }

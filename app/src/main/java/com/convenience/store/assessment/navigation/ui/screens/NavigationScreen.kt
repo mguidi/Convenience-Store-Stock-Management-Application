@@ -19,6 +19,7 @@ import com.convenience.store.assessment.navigation.ui.viewmodels.NavigationViewM
 import com.convenience.store.authentication.domain.entities.AuthenticationState
 import com.convenience.store.authentication.ui.screens.AuthenticationScreen
 import com.convenience.store.products.ui.screens.ProductCreateScreen
+import com.convenience.store.products.ui.screens.ProductEditScreen
 import com.convenience.store.products.ui.screens.ProductsScreen
 import com.convenience.store.stocks.ui.screens.StockManagementScreen
 
@@ -81,6 +82,11 @@ fun NavigationScreen() {
                                         it.name
                                     )
                                 )
+                            },
+                            onProductLongClick = {
+                                backStack.add(
+                                    Screens.ProductEditScreen(it.id)
+                                )
                             }
                         )
                     }
@@ -89,6 +95,15 @@ fun NavigationScreen() {
                 is Screens.ProductCreateScreen -> NavEntry(key) {
                     MainScreen(backStack) { _ ->
                         ProductCreateScreen(
+                            onBackClick = { backStack.removeAt(backStack.size - 1) },
+                        )
+                    }
+                }
+
+                is Screens.ProductEditScreen -> NavEntry(key) {
+                    MainScreen(backStack) { _ ->
+                        ProductEditScreen(
+                            key.productId,
                             onBackClick = { backStack.removeAt(backStack.size - 1) },
                         )
                     }

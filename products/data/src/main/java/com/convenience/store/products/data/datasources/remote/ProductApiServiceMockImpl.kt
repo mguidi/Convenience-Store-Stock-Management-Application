@@ -17,11 +17,17 @@ import javax.inject.Inject
 
 class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
-    private val _cateooryIds = listOf(
+    private val _categoryIds = listOf(
         "019d2616-21ee-78b4-a43c-fef07b5ff7ab",
         "019d2616-21ee-78f9-a43d-976eddb2f099",
         "019d2616-21ee-7943-a43e-b38a2961adb6",
         "019d2616-21ee-798d-a43f-10488bf646da",
+    )
+
+    private val _supplierIds = listOf(
+        "019d2616-21ee-78b4-a43c-fef07b5ff7ab",
+        "019d2616-21ee-78f9-a43d-976eddb2f099",
+        "019d2616-21ee-7943-a43e-b38a2961adb6",
     )
 
     private val _ids = listOf(
@@ -135,8 +141,8 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
             description = "Description for product $i",
             price = BigDecimal(i).setScale(2),
             barcode = "barcode_$i",
-            categoryId = UUID.fromString(_cateooryIds[(i - 1) % 4]),
-            supplierId = UUID.randomUUID(),
+            categoryId = UUID.fromString(_categoryIds[(i - 1) % _categoryIds.size]),
+            supplierId = UUID.fromString(_supplierIds[(i - 1) % _supplierIds.size]),
             version = 0
         )
     }.toMutableList()

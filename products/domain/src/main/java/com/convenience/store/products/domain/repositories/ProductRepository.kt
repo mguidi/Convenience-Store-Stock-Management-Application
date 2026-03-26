@@ -11,6 +11,8 @@ interface ProductRepository {
 
     suspend fun insert(product: Product): Either<ProductError.RepositoryError, Unit>
 
+    suspend fun update(product: Product): Either<ProductError.RepositoryError, Unit>
+
     fun getProductById(productId: UUID): Flow<Product?>
 
     fun getProductByBarcode(barcode: String): Flow<Product?>

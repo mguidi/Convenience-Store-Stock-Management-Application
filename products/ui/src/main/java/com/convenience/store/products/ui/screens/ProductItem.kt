@@ -1,5 +1,7 @@
 package com.convenience.store.products.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +31,8 @@ import java.util.UUID
 @Composable
 fun ProductItem(
     product: Product,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
 ) {
 
     val viewModel = hiltViewModel<ProductItemViewModel>()
@@ -39,21 +42,27 @@ fun ProductItem(
     ProductItemInt(
         product = product,
         stockQuantity = stock?.quantity,
-        onClick = onClick
+        onClick = onClick,
+        onLongClick = onLongClick
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun ProductItemInt(
+fun ProductItemInt(
     product: Product,
     stockQuantity: BigDecimal?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        onClick = onClick,
+            .padding(8.dp)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -116,7 +125,7 @@ internal fun ProductItemInt(
 
 @Preview(showBackground = true)
 @Composable
-fun ProductItemIntPreview() {
+fun ProductItemContentPreview() {
     val sampleProduct = Product(
         id = UUID.randomUUID(),
         name = "Organic Milk",
@@ -128,6 +137,11 @@ fun ProductItemIntPreview() {
         version = 0
     )
     MaterialTheme {
-        ProductItemInt(product = sampleProduct, stockQuantity = BigDecimal.ZERO, onClick = {})
+        ProductItemInt(
+            product = sampleProduct,
+            stockQuantity = BigDecimal.ZERO,
+            onClick = {},
+            onLongClick = {}
+        )
     }
 }

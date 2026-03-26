@@ -36,10 +36,12 @@ import com.convenience.store.core.ui.R as coreR
 fun ProductsGridScreen(
     pagingItems: LazyPagingItems<Product>,
     onProductClick: (Product) -> Unit,
+    onProductLongClick: (Product) -> Unit,
     itemContent: @Composable (Product) -> Unit = { product ->
         ProductItem(
             product = product,
-            onClick = { onProductClick(product) }
+            onClick = { onProductClick(product) },
+            onLongClick = { onProductLongClick(product) }
         )
     }
 ) {
@@ -169,11 +171,13 @@ fun ProductsGridScreenPreview() {
         ProductsGridScreen(
             pagingItems = pagingItems,
             onProductClick = {},
+            onProductLongClick = {},
             itemContent = { product ->
                 ProductItemInt(
                     product = product,
                     stockQuantity = BigDecimal.TEN,
-                    onClick = { }
+                    onClick = {},
+                    onLongClick = {}
                 )
             }
         )

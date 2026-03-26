@@ -2,6 +2,7 @@
 <resources>
     <string name="products_products">Products</string>
     <string name="products_create_product">Create Product</string>
+    <string name="products_edit_product">Edit Product</string>
     <string name="products_name">Name</string>
     <string name="products_description">Description</string>
     <string name="products_price">Price</string>

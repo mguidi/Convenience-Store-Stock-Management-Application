@@ -14,6 +14,7 @@ import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
+import com.convenience.store.core.domain.events.ProductUpdateEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
@@ -78,6 +79,37 @@ class ProductRepositoryImpl @Inject constructor(
             ProductError.RepositoryError.AlreadyExists.left()
         } catch (e: Exception) {
             Log.e("ProductRepository", "Generic error", e)
+            ProductError.RepositoryError.DatabaseError.left()
+        }
+    }
+
+    override suspend fun update(product: Product): Either<ProductError.RepositoryError, Unit> {
+        return try {
+            database.withTransaction {
+                // update the product on the local database
+                productDao.insertOrUpdate(product.toDto())
+                val eventPayload = ProductUpdateEvent(
+                    product.id,
+                    product.name,
+                    product.description,
+                    product.price,
+                    product.barcode,
+                    product.categoryId,
+                    product.supplierId,
+                )
+
+                // store the event in the event log
+                val event = EventLogDto(
+                    id = uuidService.createSortableUuid(),
+                    type = ProductUpdateEvent.NAME,
+                    payload = Json.encodeToString(eventPayload.toDto())
+                )
+                eventLogDao.insert(event)
+            }
+            Unit.right()
+
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Error updating product", e)
             ProductError.RepositoryError.DatabaseError.left()
         }
     }

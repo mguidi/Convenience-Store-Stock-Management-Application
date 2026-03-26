@@ -8,7 +8,7 @@ import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.usecases.CategoriesGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
-import com.convenience.store.products.domain.usecases.ProductsGetsByCategoryUseCase
+import com.convenience.store.products.domain.usecases.ProductsGetByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val productsGetUseCase: ProductsGetUseCase,
-    private val productsGetsByCategoryUseCase: ProductsGetsByCategoryUseCase,
+    private val productsGetsByCategoryUseCase: ProductsGetByCategoryUseCase,
     categoriesGetUseCase: CategoriesGetUseCase
 ) : ViewModel() {
 

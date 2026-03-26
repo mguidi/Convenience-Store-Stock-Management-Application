@@ -6,15 +6,15 @@ import com.convenience.store.products.domain.repositories.ProductRepository
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
-interface ProductsGetsByCategoryUseCase {
+interface ProductsGetByCategoryUseCase {
 
     operator fun invoke(categoryId: UUID): Flow<PagingData<Product>>
 
 }
 
-class ProductsGetsByCategoryUseCaseImpl(
+class ProductsGetByCategoryUseCaseImpl(
     private val productRepository: ProductRepository
-) : ProductsGetsByCategoryUseCase {
+) : ProductsGetByCategoryUseCase {
 
     override fun invoke(categoryId: UUID): Flow<PagingData<Product>> {
         return productRepository.getProductsByCategory(categoryId)
