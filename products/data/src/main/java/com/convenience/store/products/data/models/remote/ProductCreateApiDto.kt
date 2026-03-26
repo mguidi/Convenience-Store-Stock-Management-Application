@@ -18,15 +18,3 @@ data class ProductCreateApiDto(
     @Serializable(with = UuidSerializer::class) val categoryId: UUID,
     @Serializable(with = UuidSerializer::class) val supplierId: UUID
 )
-
-
-fun Product.toCreateApiDto(commandId: UUID) = ProductCreateApiDto(
-    commandId = commandId,
-    id = id,
-    name = name,
-    description = description,
-    price = price,
-    barcode = barcode,
-    categoryId = categoryId,
-    supplierId = supplierId
-)

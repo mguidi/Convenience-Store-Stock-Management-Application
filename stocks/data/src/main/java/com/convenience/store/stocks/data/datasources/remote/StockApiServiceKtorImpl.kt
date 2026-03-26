@@ -14,6 +14,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
 
@@ -21,8 +22,13 @@ class StockApiServiceKtorImpl @Inject constructor(
     private val client: HttpClient
 ) : StockApiService {
 
-    override suspend fun addStock(stockAddApiDto: StockAddApiDto): Either<StockApiError, Unit> {
+    override suspend fun addStock(
+        requestId: UUID,
+        productId: UUID,
+        quantity: BigDecimal
+    ): Either<StockApiError, Unit> {
         return try {
+            val stockAddApiDto = StockAddApiDto(requestId, productId, quantity)
             client.post("stocks/add") {
                 contentType(ContentType.Application.Json)
                 setBody(stockAddApiDto)
@@ -34,8 +40,13 @@ class StockApiServiceKtorImpl @Inject constructor(
         }
     }
 
-    override suspend fun removeStock(stockRemoveApiDto: StockRemoveApiDto): Either<StockApiError, Unit> {
+    override suspend fun removeStock(
+        requestId: UUID,
+        productId: UUID,
+        quantity: BigDecimal
+    ): Either<StockApiError, Unit> {
         return try {
+            val stockRemoveApiDto = StockRemoveApiDto(requestId, productId, quantity)
             client.post("stocks/remove") {
                 contentType(ContentType.Application.Json)
                 setBody(stockRemoveApiDto)

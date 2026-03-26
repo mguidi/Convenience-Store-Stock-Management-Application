@@ -6,10 +6,9 @@ import arrow.core.left
 import arrow.core.right
 import com.convenience.store.products.data.models.remote.ProductApiDto
 import com.convenience.store.products.data.models.remote.ProductApiError
+import com.convenience.store.products.data.models.remote.ProductCreateApiDto
 import com.convenience.store.products.data.models.remote.ProductDeleteApiDto
-import com.convenience.store.products.data.models.remote.toCreateApiDto
-import com.convenience.store.products.data.models.remote.toUpdteApiDto
-import com.convenience.store.products.domain.entities.Product
+import com.convenience.store.products.data.models.remote.ProductUpdateApiDto
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -153,9 +152,25 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
     override suspend fun createProduct(
         commandId: UUID,
-        product: Product
+        productId: UUID,
+        name: String,
+        description: String,
+        price: BigDecimal,
+        barcode: String,
+        categoryId: UUID,
+        supplierId: UUID,
+        version: Long
     ): Either<ProductApiError, Unit> {
-        val body = product.toCreateApiDto(commandId)
+        val body = ProductCreateApiDto(
+            commandId,
+            productId,
+            name,
+            description,
+            price,
+            barcode,
+            categoryId,
+            supplierId
+        )
         Log.d(
             "ProductApiService",
             "createProduct: ${Json.encodeToString(body)}"
@@ -180,9 +195,25 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
     override suspend fun updateProduct(
         commandId: UUID,
-        product: Product
+        productId: UUID,
+        name: String,
+        description: String,
+        price: BigDecimal,
+        barcode: String,
+        categoryId: UUID,
+        supplierId: UUID,
+        version: Long
     ): Either<ProductApiError, Unit> {
-        val body = product.toUpdteApiDto(commandId)
+        val body = ProductUpdateApiDto(
+            commandId,
+            productId,
+            name,
+            description,
+            price,
+            barcode,
+            categoryId,
+            supplierId
+        )
         Log.d(
             "ProductApiService",
             "updateProduct: ${Json.encodeToString(body)}"

@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.concurrent.withLock
 
 class StockApiServiceMockImpl @Inject constructor() : StockApiService {
 
@@ -22,7 +21,13 @@ class StockApiServiceMockImpl @Inject constructor() : StockApiService {
     private val _mutex = Mutex()
 
 
-    override suspend fun addStock(stockAddApiDto: StockAddApiDto): Either<StockApiError, Unit> {
+    override suspend fun addStock(
+        requestId: UUID,
+        productId: UUID,
+        quantity: BigDecimal
+    ): Either<StockApiError, Unit> {
+        val stockAddApiDto = StockAddApiDto(requestId, productId, quantity)
+
         Log.d(
             "StockApiService",
             "Add stock ${Json.encodeToString(stockAddApiDto)}"
@@ -37,7 +42,13 @@ class StockApiServiceMockImpl @Inject constructor() : StockApiService {
         return Unit.right()
     }
 
-    override suspend fun removeStock(stockRemoveApiDto: StockRemoveApiDto): Either<StockApiError, Unit> {
+    override suspend fun removeStock(
+        requestId: UUID,
+        productId: UUID,
+        quantity: BigDecimal
+    ): Either<StockApiError, Unit> {
+        val stockRemoveApiDto = StockRemoveApiDto(requestId, productId, quantity)
+
         Log.d(
             "StockApiService",
             "Remove stock ${Json.encodeToString(stockRemoveApiDto)}"

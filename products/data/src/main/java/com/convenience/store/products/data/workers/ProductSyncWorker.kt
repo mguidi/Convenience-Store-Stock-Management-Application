@@ -16,7 +16,6 @@ import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.events.ProductCreateEventDto
 import com.convenience.store.products.data.models.events.ProductDeleteEventDto
 import com.convenience.store.products.data.models.events.ProductUpdateEventDto
-import com.convenience.store.products.domain.entities.Product
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -57,16 +56,14 @@ class ProductSyncWorker @AssistedInject constructor(
                     val data = _json.decodeFromString<ProductCreateEventDto>(event.payload)
                     val result = productApiService.createProduct(
                         commandId = event.id,
-                        product = Product(
-                            id = data.id,
-                            name = data.name,
-                            description = data.description,
-                            price = data.price,
-                            barcode = data.barcode,
-                            categoryId = data.categoryId,
-                            supplierId = data.supplierId,
-                            version = 0,
-                        )
+                        productId = data.id,
+                        name = data.name,
+                        description = data.description,
+                        price = data.price,
+                        barcode = data.barcode,
+                        categoryId = data.categoryId,
+                        supplierId = data.supplierId,
+                        version = 0,
                     )
                     //endregion
 
@@ -84,16 +81,14 @@ class ProductSyncWorker @AssistedInject constructor(
                     val data = _json.decodeFromString<ProductUpdateEventDto>(event.payload)
                     val result = productApiService.updateProduct(
                         commandId = event.id,
-                        product = Product(
-                            id = data.id,
-                            name = data.name,
-                            description = data.description,
-                            price = data.price,
-                            barcode = data.barcode,
-                            categoryId = data.categoryId,
-                            supplierId = data.supplierId,
-                            version = 0,
-                        )
+                        productId = data.id,
+                        name = data.name,
+                        description = data.description,
+                        price = data.price,
+                        barcode = data.barcode,
+                        categoryId = data.categoryId,
+                        supplierId = data.supplierId,
+                        version = 0,
                     )
                     //endregion
 

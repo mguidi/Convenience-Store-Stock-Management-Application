@@ -13,9 +13,7 @@ import com.convenience.store.core.domain.events.StockAddEvent
 import com.convenience.store.core.domain.events.StockRemoveEvent
 import com.convenience.store.stocks.data.datasources.local.StockDao
 import com.convenience.store.stocks.data.datasources.remote.StockApiService
-import com.convenience.store.stocks.data.models.remote.StockAddApiDto
 import com.convenience.store.stocks.data.models.events.StockAddEventDto
-import com.convenience.store.stocks.data.models.remote.StockRemoveApiDto
 import com.convenience.store.stocks.data.models.events.StockRemoveEventDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -57,11 +55,9 @@ class StockSyncWorker @AssistedInject constructor(
                     //region call to the service to add the stock
                     val data = _json.decodeFromString<StockAddEventDto>(event.payload)
                     val result = stockApiService.addStock(
-                        StockAddApiDto(
-                            requestId = event.id,
-                            productId = data.productId,
-                            quantity = data.quantityChange
-                        )
+                        requestId = event.id,
+                        productId = data.productId,
+                        quantity = data.quantityChange
                     )
                     //endregion
 
@@ -87,11 +83,9 @@ class StockSyncWorker @AssistedInject constructor(
                     //region call to the service to add the stock
                     val data = _json.decodeFromString<StockRemoveEventDto>(event.payload)
                     val result = stockApiService.removeStock(
-                        StockRemoveApiDto(
-                            requestId = event.id,
-                            productId = data.productId,
-                            quantity = data.quantityChange.negate()
-                        )
+                        requestId = event.id,
+                        productId = data.productId,
+                        quantity = data.quantityChange.negate()
                     )
                     //endregion
 
