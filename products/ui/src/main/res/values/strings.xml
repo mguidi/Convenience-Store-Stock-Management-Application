@@ -21,6 +21,7 @@
     <string name="products_errors_invalid_category">Category cannot be empty</string>
     <string name="products_errors_invalid_supplier">Supplier cannot be empty</string>
     <string name="products_errors_already_exists">Product already exists</string>
+    <string name="products_errors_not_exists">Product not exists</string>
     <string name="products_filters">Filters</string>
     <string name="products_filter_by_category">Filter by Category</string>
     <string name="products_all_categories">All Categories</string>

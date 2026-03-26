@@ -10,6 +10,8 @@ import com.convenience.store.products.domain.usecases.CategoryGetUseCase
 import com.convenience.store.products.domain.usecases.CategoryGetUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductAddUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductCreateUseCase
+import com.convenience.store.products.domain.usecases.ProductDeleteUseCase
+import com.convenience.store.products.domain.usecases.ProductDeleteUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductGetUseCase
 import com.convenience.store.products.domain.usecases.ProductGetUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductUpdateUseCase
@@ -63,6 +65,18 @@ object ProductsUiModule {
             productRepository,
             categoryRepository,
             supplierRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductDeleteUseCase(
+        productSyncService: ProductSyncService,
+        productRepository: ProductRepository,
+    ): ProductDeleteUseCase {
+        return ProductDeleteUseCaseImpl(
+            productSyncService,
+            productRepository
         )
     }
 

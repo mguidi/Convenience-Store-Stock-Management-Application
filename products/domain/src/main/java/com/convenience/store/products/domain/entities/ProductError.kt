@@ -13,6 +13,8 @@ sealed interface ProductError {
 
     sealed interface RepositoryError : ProductError {
         data object AlreadyExists : RepositoryError
+
+        data object NotExists : RepositoryError
         data object DatabaseError : RepositoryError
         data object UnknownError : RepositoryError
     }

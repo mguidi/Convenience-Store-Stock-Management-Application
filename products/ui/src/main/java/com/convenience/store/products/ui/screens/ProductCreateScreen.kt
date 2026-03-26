@@ -96,6 +96,7 @@ fun ProductCreateScreen(
                         )
 
                         is ProductError.RepositoryError.AlreadyExists -> context.getString(productsR.string.products_errors_already_exists)
+                        is ProductError.RepositoryError.NotExists -> context.getString(productsR.string.products_errors_not_exists)
                         is ProductError.RepositoryError.DatabaseError -> context.getString(coreR.string.core_database_error)
                         is ProductError.RepositoryError.UnknownError -> context.getString(coreR.string.core_unknown_error)
                     }

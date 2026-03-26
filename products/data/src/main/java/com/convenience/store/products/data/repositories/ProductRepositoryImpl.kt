@@ -14,6 +14,7 @@ import arrow.core.right
 import com.convenience.store.core.data.datasources.EventLogDao
 import com.convenience.store.core.data.models.EventLogDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
+import com.convenience.store.core.domain.events.ProductDeleteEvent
 import com.convenience.store.core.domain.events.ProductUpdateEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
@@ -78,7 +79,7 @@ class ProductRepositoryImpl @Inject constructor(
             Log.w("ProductRepository", "Product already exists", e)
             ProductError.RepositoryError.AlreadyExists.left()
         } catch (e: Exception) {
-            Log.e("ProductRepository", "Generic error", e)
+            Log.e("ProductRepository", "Error inserting product", e)
             ProductError.RepositoryError.DatabaseError.left()
         }
     }
@@ -110,6 +111,30 @@ class ProductRepositoryImpl @Inject constructor(
 
         } catch (e: Exception) {
             Log.e("ProductRepository", "Error updating product", e)
+            ProductError.RepositoryError.DatabaseError.left()
+        }
+    }
+
+
+    override suspend fun deleteById(productId: UUID): Either<ProductError.RepositoryError, Unit> {
+        return try {
+            database.withTransaction {
+                // update the product on the local database
+                productDao.deleteById(productId)
+                val eventPayload = ProductDeleteEvent(productId)
+
+                // store the event in the event log
+                val event = EventLogDto(
+                    id = uuidService.createSortableUuid(),
+                    type = ProductUpdateEvent.NAME,
+                    payload = Json.encodeToString(eventPayload.toDto())
+                )
+                eventLogDao.insert(event)
+            }
+            Unit.right()
+
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Error deleting product", e)
             ProductError.RepositoryError.DatabaseError.left()
         }
     }

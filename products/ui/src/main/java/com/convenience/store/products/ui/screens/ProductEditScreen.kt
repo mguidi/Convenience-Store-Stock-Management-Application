@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -102,6 +103,7 @@ fun ProductEditScreen(
                         )
 
                         is ProductError.RepositoryError.AlreadyExists -> context.getString(productsR.string.products_errors_already_exists)
+                        is ProductError.RepositoryError.NotExists -> context.getString(productsR.string.products_errors_not_exists)
                         is ProductError.RepositoryError.DatabaseError -> context.getString(coreR.string.core_database_error)
                         is ProductError.RepositoryError.UnknownError -> context.getString(coreR.string.core_unknown_error)
                     }
@@ -130,6 +132,9 @@ fun ProductEditScreen(
         onBackClick = onBackClickReset,
         onSaveClick = {
             viewModel.save()
+        },
+        onDeleteClick = {
+            viewModel.delete()
         }
     )
 }
@@ -150,7 +155,8 @@ internal fun ProductEditScreenInt(
     onCategorySelected: (Category) -> Unit,
     onSupplierSelected: (Supplier) -> Unit,
     onBackClick: () -> Unit,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
 
     val isSaveEnabled = !isLoading &&
@@ -182,6 +188,15 @@ internal fun ProductEditScreenInt(
                         Icon(
                             Icons.Default.Check,
                             contentDescription = stringResource(coreR.string.core_action_save)
+                        )
+                    }
+                    IconButton(
+                        onClick = onDeleteClick,
+                        enabled = !isLoading
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = stringResource(coreR.string.core_action_delete)
                         )
                     }
                 }
@@ -293,7 +308,8 @@ fun ProductEditScreenPreview() {
             onCategorySelected = {},
             onSupplierSelected = {},
             onBackClick = {},
-            onSaveClick = {}
+            onSaveClick = {},
+            onDeleteClick = {}
         )
     }
 }

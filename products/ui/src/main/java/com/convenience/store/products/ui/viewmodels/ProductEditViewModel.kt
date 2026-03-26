@@ -9,6 +9,7 @@ import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.usecases.CategoriesGetUseCase
 import com.convenience.store.products.domain.usecases.CategoryGetUseCase
+import com.convenience.store.products.domain.usecases.ProductDeleteUseCase
 import com.convenience.store.products.domain.usecases.ProductGetUseCase
 import com.convenience.store.products.domain.usecases.ProductUpdateUseCase
 import com.convenience.store.suppliers.domain.entities.Supplier
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class ProductEditViewModel @Inject constructor(
     private val productGetUseCase: ProductGetUseCase,
     private val productUpdateUseCase: ProductUpdateUseCase,
+    private val productDeleteUseCase: ProductDeleteUseCase,
     private val categoryGetUseCase: CategoryGetUseCase,
     private val supplierGetUseCase: SupplierGetUseCase,
     categoriesGetUseCase: CategoriesGetUseCase,
@@ -114,6 +116,22 @@ class ProductEditViewModel @Inject constructor(
         }
     }
 
+    fun delete() {
+        val id = _currentProduct?.id ?: return
+
+        viewModelScope.launch {
+            _uiState.value = ProductEditScreenState.Loading
+            productDeleteUseCase(id).fold(
+                ifLeft = {
+                    _uiState.value = ProductEditScreenState.Error(it)
+                },
+                ifRight = {
+                    reset()
+                    _uiState.value = ProductEditScreenState.Success
+                }
+            )
+        }
+    }
 
     private fun clearFields() {
         nameState.clearText()
