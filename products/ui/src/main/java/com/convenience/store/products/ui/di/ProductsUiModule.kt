@@ -3,10 +3,12 @@ package com.convenience.store.products.ui.di
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.domain.repositories.ProductRepository
 import com.convenience.store.products.domain.services.ProductSyncService
-import com.convenience.store.products.domain.usecases.ProductCreateUseCase
 import com.convenience.store.products.domain.usecases.ProductAddUseCaseImpl
+import com.convenience.store.products.domain.usecases.ProductCreateUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCaseImpl
+import com.convenience.store.products.domain.usecases.ProductsGetsByCategoryUseCase
+import com.convenience.store.products.domain.usecases.ProductsGetsByCategoryUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,5 +34,13 @@ object ProductsUiModule {
         productRepository: ProductRepository
     ): ProductsGetUseCase {
         return ProductsGetUseCaseImpl(productRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductsGetsByCategoryUseCase(
+        productRepository: ProductRepository
+    ): ProductsGetsByCategoryUseCase {
+        return ProductsGetsByCategoryUseCaseImpl(productRepository)
     }
 }

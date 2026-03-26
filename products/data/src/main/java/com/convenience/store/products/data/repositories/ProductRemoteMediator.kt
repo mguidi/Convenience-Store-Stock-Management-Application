@@ -32,12 +32,14 @@ class ProductRemoteMediator(
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(1) ?: 1
             }
+
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
                     ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 prevKey
             }
+
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
@@ -47,7 +49,15 @@ class ProductRemoteMediator(
         }
 
         return try {
-            val response = productApiService.getProducts(page = page, pageSize = state.config.pageSize)
+            val response = if (categoryId == null) {
+                productApiService.getProducts(page = page, pageSize = state.config.pageSize)
+            } else {
+                productApiService.getProductsByCategoryId(
+                    categoryId,
+                    page = page,
+                    pageSize = state.config.pageSize
+                )
+            }
 
             response.fold(
                 { MediatorResult.Error(Exception("API Error")) },
@@ -61,7 +71,11 @@ class ProductRemoteMediator(
                         val prevKey = if (page == 1) null else page - 1
                         val nextKey = if (endOfPaginationReached) null else page + 1
                         val keys = products.map {
-                            ProductRemoteKeyDto(productId = it.id, prevKey = prevKey, nextKey = nextKey)
+                            ProductRemoteKeyDto(
+                                productId = it.id,
+                                prevKey = prevKey,
+                                nextKey = nextKey
+                            )
                         }
                         productRemoteKeyDao.insertAll(keys)
                         productDao.insertOrUpdateAll(products.map { it.toDto() })

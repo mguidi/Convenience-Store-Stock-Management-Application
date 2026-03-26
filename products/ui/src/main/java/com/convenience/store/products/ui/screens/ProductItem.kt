@@ -37,9 +37,9 @@ fun ProductItem(
         .collectAsStateWithLifecycle(initialValue = null)
 
     ProductItemInt(
-        product,
+        product = product,
         stockQuantity = stock?.quantity,
-        onClick
+        onClick = onClick
     )
 }
 

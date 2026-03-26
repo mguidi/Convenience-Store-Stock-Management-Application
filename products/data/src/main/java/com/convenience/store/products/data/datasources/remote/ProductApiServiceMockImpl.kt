@@ -17,6 +17,13 @@ import javax.inject.Inject
 
 class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
+    private val _cateooryIds = listOf(
+        "019d2616-21ee-78b4-a43c-fef07b5ff7ab",
+        "019d2616-21ee-78f9-a43d-976eddb2f099",
+        "019d2616-21ee-7943-a43e-b38a2961adb6",
+        "019d2616-21ee-798d-a43f-10488bf646da",
+    )
+
     private val _ids = listOf(
         "019d2616-21ee-78b4-a43c-fef07b5ff7ab",
         "019d2616-21ee-78f9-a43d-976eddb2f099",
@@ -118,17 +125,17 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
         "019d2616-21ee-77df-a439-369691617754",
         "019d2616-21ee-7828-a43a-9a9a9904fcbf",
         "019d2616-21ee-786e-a43b-36b82eecbbe8",
-        ).sorted()
+    ).sorted()
 
     // Mocking a large list of products for pagination testing
     private val _allProducts = (1..99).map { i ->
         ProductApiDto(
-            id = UUID.fromString(_ids[i-1]),
+            id = UUID.fromString(_ids[i - 1]),
             name = "Product $i",
             description = "Description for product $i",
             price = BigDecimal(i).setScale(2),
             barcode = "barcode_$i",
-            categoryId = UUID.randomUUID(),
+            categoryId = UUID.fromString(_cateooryIds[(i - 1) % 4]),
             supplierId = UUID.randomUUID(),
             version = 0
         )
@@ -183,6 +190,29 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
 
         return if (start < _allProducts.size) {
             _allProducts.subList(start, end).right()
+        } else {
+            emptyList<ProductApiDto>().right()
+        }
+    }
+
+    override suspend fun getProductsByCategoryId(
+        categoryId: UUID,
+        page: Int,
+        pageSize: Int
+    ): Either<ProductApiError, List<ProductApiDto>> {
+        Log.d(
+            "ProductApiService",
+            "getProductsByCategoryId: categoryId = $categoryId, page = $page, pageSize = $pageSize"
+        )
+        delay(1000)
+
+        val allProductsByCategoryId = _allProducts.filter { it.categoryId == categoryId }
+
+        val start = (page - 1) * pageSize
+        val end = (start + pageSize).coerceAtMost(allProductsByCategoryId.size)
+
+        return if (start < allProductsByCategoryId.size) {
+            allProductsByCategoryId.subList(start, end).right()
         } else {
             emptyList<ProductApiDto>().right()
         }

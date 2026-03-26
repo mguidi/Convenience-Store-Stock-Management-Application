@@ -3,12 +3,12 @@ package com.convenience.store.products.domain.entities
 sealed interface ProductError {
 
     sealed interface ValidationError : ProductError {
-        object InvalidName : ValidationError
-        object InvalidDescription : ValidationError
-        object InvalidPrice : ValidationError
-        object InvalidBarcode : ValidationError
-        object InvalidCategory : ValidationError
-        object InvalidSupplier : ValidationError
+        data object InvalidName : ValidationError
+        data object InvalidDescription : ValidationError
+        data object InvalidPrice : ValidationError
+        data object InvalidBarcode : ValidationError
+        data object InvalidCategory : ValidationError
+        data object InvalidSupplier : ValidationError
     }
 
     sealed interface RepositoryError : ProductError {

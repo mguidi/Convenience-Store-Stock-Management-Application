@@ -35,7 +35,13 @@ import com.convenience.store.core.ui.R as coreR
 @Composable
 fun ProductsGridScreen(
     pagingItems: LazyPagingItems<Product>,
-    onProductClick: (Product) -> Unit
+    onProductClick: (Product) -> Unit,
+    itemContent: @Composable (Product) -> Unit = { product ->
+        ProductItem(
+            product = product,
+            onClick = { onProductClick(product) }
+        )
+    }
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -51,10 +57,7 @@ fun ProductsGridScreen(
             ) { index ->
                 val product = pagingItems[index]
                 if (product != null) {
-                    ProductItem(
-                        product = product,
-                        onClick = { onProductClick(product) }
-                    )
+                    itemContent(product)
                 }
             }
 
@@ -165,7 +168,14 @@ fun ProductsGridScreenPreview() {
     MaterialTheme {
         ProductsGridScreen(
             pagingItems = pagingItems,
-            onProductClick = {}
+            onProductClick = {},
+            itemContent = { product ->
+                ProductItemInt(
+                    product = product,
+                    stockQuantity = BigDecimal.TEN,
+                    onClick = { }
+                )
+            }
         )
     }
 }
