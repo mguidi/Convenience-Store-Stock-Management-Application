@@ -113,7 +113,7 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getProductsStream(): Flow<PagingData<Product>> {
+    override fun getProducts(): Flow<PagingData<Product>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
@@ -134,7 +134,7 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getProductsByCategoryStream(categoryId: UUID): Flow<PagingData<Product>> {
+    override fun getProductsByCategory(categoryId: UUID): Flow<PagingData<Product>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,

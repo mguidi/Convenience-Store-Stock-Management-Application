@@ -58,6 +58,9 @@ dependencies {
     implementation(project(":products:data"))
     implementation(project(":products:ui"))
 
+    implementation(project(":suppliers:domain"))
+    implementation(project(":suppliers:data"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

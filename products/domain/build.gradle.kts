@@ -34,6 +34,7 @@ android {
 
 dependencies {
     api(project(":core:domain"))
+    api(project(":suppliers:domain"))
     api(libs.androidx.paging.common)
 
     testRuntimeOnly(libs.junit.platform.launcher)

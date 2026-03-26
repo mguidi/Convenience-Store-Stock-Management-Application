@@ -56,9 +56,9 @@ fun ProductCreateScreen(
 ) {
     val viewModel = hiltViewModel<ProductCreateViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val categories by viewModel.categories.collectAsStateWithLifecycle(emptyList())
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
-    val suppliers by viewModel.suppliers.collectAsStateWithLifecycle()
+    val suppliers by viewModel.suppliers.collectAsStateWithLifecycle(emptyList())
     val selectedSupplier by viewModel.selectedSupplier.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalResources.current

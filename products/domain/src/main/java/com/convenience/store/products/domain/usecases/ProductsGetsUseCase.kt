@@ -16,6 +16,6 @@ class ProductsGetUseCaseImpl(
 ) : ProductsGetUseCase {
 
     override fun invoke(): Flow<PagingData<Product>> {
-        return productRepository.getProductsStream()
+        return productRepository.getProducts()
     }
 }

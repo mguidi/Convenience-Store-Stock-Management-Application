@@ -2,8 +2,10 @@ package com.convenience.store.products.data.di
 
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.datasources.remote.ProductApiServiceMockImpl
+import com.convenience.store.products.data.repositories.CategoryRepositoryMock
 import com.convenience.store.products.data.repositories.ProductRepositoryImpl
 import com.convenience.store.products.data.services.ProductSyncServiceImpl
+import com.convenience.store.products.domain.repositories.CategoryRepository
 import com.convenience.store.products.domain.repositories.ProductRepository
 import com.convenience.store.products.domain.services.ProductSyncService
 import dagger.Binds
@@ -26,5 +28,9 @@ abstract class ProductsDataModule {
     @Binds
     @Singleton
     abstract fun bindProductSyncService(impl: ProductSyncServiceImpl): ProductSyncService
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryRepository(impl: CategoryRepositoryMock): CategoryRepository
 
 }

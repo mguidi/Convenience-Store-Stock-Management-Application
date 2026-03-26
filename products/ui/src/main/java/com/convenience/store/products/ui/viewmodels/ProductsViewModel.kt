@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.Product
+import com.convenience.store.products.domain.usecases.CategoriesGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetsByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,34 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val productsGetUseCase: ProductsGetUseCase,
-    private val productsGetsByCategoryUseCase: ProductsGetsByCategoryUseCase
+    private val productsGetsByCategoryUseCase: ProductsGetsByCategoryUseCase,
+    categoriesGetUseCase: CategoriesGetUseCase
 ) : ViewModel() {
 
     private val _selectedCategoryId = MutableStateFlow<UUID?>(null)
     val selectedCategoryId: StateFlow<UUID?> = _selectedCategoryId.asStateFlow()
-
-
-    // Mocked categories for now, in a real app these would come from a CategoryRepository
-    private val _categories = MutableStateFlow(
-        listOf(
-            Category(
-                UUID.fromString("019d2616-21ee-78b4-a43c-fef07b5ff7ab"),
-                "Beverages",
-                "Drinks and sodas"
-            ),
-            Category(
-                UUID.fromString("019d2616-21ee-78f9-a43d-976eddb2f099"),
-                "Snacks",
-                "Chips and cookies"
-            ),
-            Category(
-                UUID.fromString("019d2616-21ee-7943-a43e-b38a2961adb6"),
-                "Dairy",
-                "Milk and cheese"
-            )
-        )
-    )
-    val categories: StateFlow<List<Category>> = _categories.asStateFlow()
+    val categories: Flow<List<Category>> = categoriesGetUseCase()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val products: Flow<PagingData<Product>> = _selectedCategoryId

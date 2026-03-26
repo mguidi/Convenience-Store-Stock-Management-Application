@@ -15,7 +15,7 @@ interface ProductRepository {
 
     fun getProductByBarcode(barcode: String): Flow<Product?>
 
-    fun getProductsStream(): Flow<PagingData<Product>>
+    fun getProducts(): Flow<PagingData<Product>>
 
-    fun getProductsByCategoryStream(categoryId: UUID): Flow<PagingData<Product>>
+    fun getProductsByCategory(categoryId: UUID): Flow<PagingData<Product>>
 }

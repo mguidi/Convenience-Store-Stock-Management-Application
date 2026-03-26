@@ -3,12 +3,18 @@ package com.convenience.store.products.domain.usecases
 import arrow.core.left
 import arrow.core.right
 import com.convenience.store.core.domain.services.UuidService
+import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
+import com.convenience.store.products.domain.repositories.CategoryRepository
 import com.convenience.store.products.domain.repositories.ProductRepository
+import com.convenience.store.products.domain.services.ProductSyncService
+import com.convenience.store.suppliers.domain.entities.Supplier
+import com.convenience.store.suppliers.domain.repositories.SupplierRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -20,13 +26,25 @@ import java.util.UUID
 class ProductAddUseCaseTest {
 
     private val productRepository: ProductRepository = mockk()
+
+    private val categoryRepository: CategoryRepository = mockk()
+
+    private val supplierRepository: SupplierRepository = mockk()
+
+    private val productSyncService: ProductSyncService = mockk()
     private val uuidService: UuidService = mockk()
 
     private lateinit var useCase: ProductCreateUseCase
 
     @BeforeEach
     fun setUp() {
-        useCase = ProductAddUseCaseImpl(uuidService, productRepository)
+        useCase = ProductAddUseCaseImpl(
+            uuidService,
+            productSyncService,
+            productRepository,
+            categoryRepository,
+            supplierRepository
+        )
     }
 
     @Test
@@ -48,10 +66,23 @@ class ProductAddUseCaseTest {
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
+            version = 0
         )
         coEvery { productRepository.insert(product) } returns Unit.right()
         coEvery { uuidService.createSortableUuid() } returns id
-
+        coEvery { productSyncService.scheduleSync() } returns Unit
+        coEvery { categoryRepository.getCategoryById(categoryId) } returns flowOf(
+            Category(
+                categoryId,
+                "Category"
+            )
+        )
+        coEvery { supplierRepository.getSupplierById(supplierId) } returns flowOf(
+            Supplier(
+                supplierId,
+                "Supplier"
+            )
+        )
 
         // When
         val result = useCase(name, description, price, barcode, categoryId, supplierId)
@@ -60,6 +91,7 @@ class ProductAddUseCaseTest {
         assertTrue(result.isRight())
         coVerify(exactly = 1) { productRepository.insert(product) }
     }
+
 
     @Test
     fun `should return failure when repository fails to insert product`() = runBlocking {
@@ -71,6 +103,18 @@ class ProductAddUseCaseTest {
         val barcode = "Test Barcode"
         val categoryId = UUID.randomUUID()
         val supplierId = UUID.randomUUID()
+        coEvery { categoryRepository.getCategoryById(categoryId) } returns flowOf(
+            Category(
+                categoryId,
+                "Category"
+            )
+        )
+        coEvery { supplierRepository.getSupplierById(supplierId) } returns flowOf(
+            Supplier(
+                supplierId,
+                "Supplier"
+            )
+        )
 
         val product = Product(
             id = id,
@@ -80,6 +124,7 @@ class ProductAddUseCaseTest {
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
+            version = 0
         )
         coEvery { productRepository.insert(product) } returns ProductError.RepositoryError.DatabaseError.left()
         coEvery { uuidService.createSortableUuid() } returns id
@@ -106,6 +151,8 @@ class ProductAddUseCaseTest {
         val supplierId = UUID.randomUUID()
 
         coEvery { uuidService.createSortableUuid() } returns id
+        coEvery { categoryRepository.getCategoryById(categoryId) } returns flowOf(null)
+        coEvery { supplierRepository.getSupplierById(supplierId) } returns flowOf(null)
 
         // When
         val result = useCase(name, description, price, barcode, categoryId, supplierId)
@@ -117,7 +164,9 @@ class ProductAddUseCaseTest {
                 ProductError.ValidationError.InvalidName,
                 ProductError.ValidationError.InvalidDescription,
                 ProductError.ValidationError.InvalidPrice,
-                ProductError.ValidationError.InvalidBarcode
+                ProductError.ValidationError.InvalidBarcode,
+                ProductError.ValidationError.InvalidCategory,
+                ProductError.ValidationError.InvalidSupplier
             ), result.leftOrNull()
         )
     }

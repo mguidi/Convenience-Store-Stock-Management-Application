@@ -66,7 +66,7 @@ fun ProductsScreen(
 ) {
     val viewModel: ProductsViewModel = hiltViewModel<ProductsViewModel>()
     val pagingItems = viewModel.products.collectAsLazyPagingItems()
-    val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val categories by viewModel.categories.collectAsStateWithLifecycle(emptyList())
     val selectedCategoryId by viewModel.selectedCategoryId.collectAsStateWithLifecycle()
 
     var showFilters by remember { mutableStateOf(false) }
@@ -100,7 +100,7 @@ internal fun ProductsScreenInt(
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val showGrid =
         windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
-    
+
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -233,7 +233,7 @@ private fun FilterContent(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
     }
 }

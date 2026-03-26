@@ -17,6 +17,6 @@ class ProductsGetsByCategoryUseCaseImpl(
 ) : ProductsGetsByCategoryUseCase {
 
     override fun invoke(categoryId: UUID): Flow<PagingData<Product>> {
-        return productRepository.getProductsByCategoryStream(categoryId)
+        return productRepository.getProductsByCategory(categoryId)
     }
 }

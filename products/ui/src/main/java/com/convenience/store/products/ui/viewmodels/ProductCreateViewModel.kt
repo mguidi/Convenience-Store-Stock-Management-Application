@@ -6,18 +6,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.convenience.store.products.domain.entities.Category
 import com.convenience.store.products.domain.entities.ProductError
+import com.convenience.store.products.domain.usecases.CategoriesGetUseCase
 import com.convenience.store.products.domain.usecases.ProductCreateUseCase
 import com.convenience.store.suppliers.domain.entities.Supplier
+import com.convenience.store.suppliers.domain.usecases.SuppliersGetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductCreateViewModel @Inject constructor(
-    private val productCreateUseCase: ProductCreateUseCase
+    private val productCreateUseCase: ProductCreateUseCase,
+    categoriesGetUseCase: CategoriesGetUseCase,
+    suppliersGetUseCase: SuppliersGetUseCase
 ) : ViewModel() {
 
     // State for Product fields
@@ -27,14 +30,12 @@ class ProductCreateViewModel @Inject constructor(
     val barcodeState = TextFieldState()
 
     // State for Categories
-    private val _categories = MutableStateFlow<List<Category>>(emptyList())
-    val categories = _categories.asStateFlow()
+    val categories = categoriesGetUseCase()
     private val _selectedCategory = MutableStateFlow<Category?>(null)
     val selectedCategory = _selectedCategory.asStateFlow()
 
     // State for Suppliers
-    private val _suppliers = MutableStateFlow<List<Supplier>>(emptyList())
-    val suppliers = _suppliers.asStateFlow()
+    val suppliers = suppliersGetUseCase()
     private val _selectedSupplier = MutableStateFlow<Supplier?>(null)
     val selectedSupplier = _selectedSupplier.asStateFlow()
 
@@ -48,7 +49,6 @@ class ProductCreateViewModel @Inject constructor(
     fun init() {
         if (!_isInitialized) {
             clearFields()
-            loadData()
             _isInitialized = true
         }
     }
@@ -89,22 +89,6 @@ class ProductCreateViewModel @Inject constructor(
         }
     }
 
-    private fun loadData() {
-        // Mocking data. In a real app, load this from use cases/repositories
-        val mockCategories = listOf(
-            Category(UUID.randomUUID(), "Beverages", "Drinks and sodas"),
-            Category(UUID.randomUUID(), "Snacks", "Chips and cookies"),
-            Category(UUID.randomUUID(), "Dairy", "Milk and cheese")
-        )
-        _categories.value = mockCategories
-
-        val mockSuppliers = listOf(
-            Supplier(UUID.randomUUID(), "Global Foods Inc."),
-            Supplier(UUID.randomUUID(), "Local Dairy Farm"),
-            Supplier(UUID.randomUUID(), "Soda Distributing Co.")
-        )
-        _suppliers.value = mockSuppliers
-    }
 
     private fun clearFields() {
         nameState.clearText()
