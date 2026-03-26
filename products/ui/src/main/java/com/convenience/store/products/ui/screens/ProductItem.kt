@@ -8,8 +8,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.SyncDisabled
+import androidx.compose.material.icons.filled.SyncLock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.convenience.store.core.ui.R as coreR
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.ui.R
 import com.convenience.store.products.ui.viewmodels.ProductItemViewModel
@@ -118,6 +125,12 @@ fun ProductItemInt(
                         }
                     )
                 }
+                if (!product.synced) {
+                    Icon(
+                        Icons.Default.SyncDisabled,
+                        contentDescription = stringResource(coreR.string.core_status_not_synced)
+                    )
+                }
             }
         }
     }
@@ -134,7 +147,7 @@ fun ProductItemContentPreview() {
         barcode = "1234567890123",
         categoryId = UUID.randomUUID(),
         supplierId = UUID.randomUUID(),
-        version = 0
+        synced = false
     )
     MaterialTheme {
         ProductItemInt(

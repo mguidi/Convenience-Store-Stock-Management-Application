@@ -17,7 +17,6 @@ interface ProductApiService {
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        version: Long
     ): Either<ProductApiError, Unit>
 
     suspend fun updateProduct(
@@ -29,7 +28,6 @@ interface ProductApiService {
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        version: Long
     ): Either<ProductApiError, Unit>
 
     suspend fun deleteProduct(commandId: UUID, productId: UUID): Either<ProductApiError, Unit>

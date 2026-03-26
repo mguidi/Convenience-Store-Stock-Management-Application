@@ -8,5 +8,5 @@ import java.util.UUID
 data class ProductRemoteKeyDto(
     @PrimaryKey val productId: UUID,
     val prevKey: Int?,
-    val nextKey: Int?
+    val nextKey: Int?,
 )

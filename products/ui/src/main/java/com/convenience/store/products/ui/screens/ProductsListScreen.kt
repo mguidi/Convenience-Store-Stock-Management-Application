@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +44,11 @@ fun ProductsListScreen(
         )
     }
 ) {
+    val isRefreshing = pagingItems.loadState.refresh is LoadState.Loading
 
-    Box(
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { pagingItems.refresh() },
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
@@ -84,10 +88,6 @@ fun ProductsListScreen(
 
         // Gestione stato di caricamento iniziale (Refresh)
         when (val state = pagingItems.loadState.refresh) {
-            is LoadState.Loading -> {
-                LoadingIndicator(modifier = Modifier.fillMaxSize())
-            }
-
             is LoadState.Error -> {
                 ErrorItem(
                     message = state.error.localizedMessage
@@ -138,7 +138,7 @@ fun ProductsListScreenPreview() {
             barcode = "1234567890123",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            version = 0
+            synced = false
         ),
         Product(
             id = UUID.randomUUID(),
@@ -148,7 +148,7 @@ fun ProductsListScreenPreview() {
             barcode = "9876543210987",
             categoryId = UUID.randomUUID(),
             supplierId = UUID.randomUUID(),
-            version = 0
+            synced = true
         )
     )
 

@@ -16,7 +16,6 @@ data class ProductApiDto(
     val barcode: String,
     @Serializable(with = UuidSerializer::class) val categoryId: UUID,
     @Serializable(with = UuidSerializer::class) val supplierId: UUID,
-    val version: Long
 )
 
 fun ProductApiDto.toDto() = ProductDto(
@@ -27,5 +26,5 @@ fun ProductApiDto.toDto() = ProductDto(
     barcode = barcode,
     categoryId = categoryId,
     supplierId = supplierId,
-    version = version,
+    synced = true,
 )

@@ -19,7 +19,7 @@ data class ProductDto(
     val barcode: String,
     val categoryId: UUID,
     val supplierId: UUID,
-    val version: Long,
+    val synced: Boolean,
     val timestamp: Long = System.currentTimeMillis()
 )
 
@@ -31,7 +31,7 @@ fun ProductDto.toDomain() = Product(
     barcode = barcode,
     categoryId = categoryId,
     supplierId = supplierId,
-    version = version,
+    synced = synced,
 )
 
 fun Product.toDto() = ProductDto(
@@ -42,5 +42,5 @@ fun Product.toDto() = ProductDto(
     barcode = barcode,
     categoryId = categoryId,
     supplierId = supplierId,
-    version = version,
+    synced = synced,
 )

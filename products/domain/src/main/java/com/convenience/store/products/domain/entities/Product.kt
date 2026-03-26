@@ -11,5 +11,5 @@ data class Product(
     val barcode: String,
     val categoryId: UUID,
     val supplierId: UUID,
-    val version: Long
+    val synced: Boolean
 )

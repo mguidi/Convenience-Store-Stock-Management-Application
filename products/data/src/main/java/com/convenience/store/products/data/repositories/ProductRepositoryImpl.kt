@@ -1,5 +1,6 @@
 package com.convenience.store.products.data.repositories
 
+import android.content.Context
 import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -20,13 +21,14 @@ import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
-import com.convenience.store.products.data.models.local.toDomain
 import com.convenience.store.products.data.models.events.toDto
+import com.convenience.store.products.data.models.local.toDomain
 import com.convenience.store.products.data.models.local.toDto
 import com.convenience.store.products.data.models.remote.toDto
 import com.convenience.store.products.domain.entities.Product
 import com.convenience.store.products.domain.entities.ProductError
 import com.convenience.store.products.domain.repositories.ProductRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
@@ -40,10 +42,10 @@ import javax.inject.Inject
  * This class is responsible for managing the products
  */
 class ProductRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val database: RoomDatabase,
     private val eventLogDao: EventLogDao,
     private val productDao: ProductDao,
-    private val productRemoteKeyDao: ProductRemoteKeyDao,
     private val productApiService: ProductApiService,
     private val uuidService: UuidService,
 ) : ProductRepository {
@@ -157,7 +159,7 @@ class ProductRepositoryImpl @Inject constructor(
 
         //region on success update the product on the local database
         remoteResult?.onRight { remoteProduct ->
-            if (remoteProduct.version > (localProduct?.version ?: -1)) productDao.insertOrUpdate(remoteProduct.toDto())
+            productDao.insertOrUpdate(remoteProduct.toDto())
         }
         //endregion
 
@@ -175,12 +177,12 @@ class ProductRepositoryImpl @Inject constructor(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 5
+                prefetchDistance = 2
             ),
             remoteMediator = ProductRemoteMediator(
+                context = context,
                 database = database,
                 productDao = productDao,
-                productRemoteKeyDao = productRemoteKeyDao,
                 productApiService = productApiService
             ),
             pagingSourceFactory = { productDao.getProductsPaged() }
@@ -196,12 +198,12 @@ class ProductRepositoryImpl @Inject constructor(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 5
+                prefetchDistance = 2
             ),
             remoteMediator = ProductRemoteMediator(
+                context = context,
                 database = database,
                 productDao = productDao,
-                productRemoteKeyDao = productRemoteKeyDao,
                 productApiService = productApiService,
                 categoryId = categoryId
             ),

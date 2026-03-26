@@ -29,7 +29,7 @@ class ProductSyncServiceImpl @Inject constructor(
 
         WorkManager.getInstance(context).enqueueUniqueWork(
             "product_sync",
-            ExistingWorkPolicy.APPEND,
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
             syncRequest
         )
     }

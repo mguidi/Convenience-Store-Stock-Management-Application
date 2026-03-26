@@ -8,4 +8,5 @@
     <string name="core_action_back">Back</string>
     <string name="core_unknown_error">Unknown error</string>
     <string name="core_database_error">Database error</string>
+    <string name="core_status_not_synced">Not Synchronized</string>
 </resources>

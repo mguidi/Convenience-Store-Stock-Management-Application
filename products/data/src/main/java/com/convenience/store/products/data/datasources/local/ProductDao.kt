@@ -2,7 +2,6 @@ package com.convenience.store.products.data.datasources.local
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -24,6 +23,12 @@ interface ProductDao {
 
     @Query("DELETE FROM products WHERE id = :id")
     suspend fun deleteById(id: UUID)
+
+    @Query("DELETE FROM products")
+    suspend fun deleteAll()
+
+    @Query("DELETE FROM products WHERE synced = 1")
+    suspend fun deleteAllSynced()
 
     @Query("SELECT * FROM products WHERE id = :productId")
     fun getProductById(productId: UUID): Flow<ProductDto?>

@@ -145,9 +145,9 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
             barcode = "barcode_$i",
             categoryId = UUID.fromString(_categoryIds[(i - 1) % _categoryIds.size]),
             supplierId = UUID.fromString(_supplierIds[(i - 1) % _supplierIds.size]),
-            version = 0
         )
     }.toMutableList()
+//    private val _allProducts = emptyList<ProductApiDto>().toMutableList()
     private val _mutex = Mutex()
 
     override suspend fun createProduct(
@@ -159,7 +159,6 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        version: Long
     ): Either<ProductApiError, Unit> {
         val body = ProductCreateApiDto(
             commandId,
@@ -186,7 +185,6 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
                 barcode = body.barcode,
                 categoryId = body.categoryId,
                 supplierId = body.supplierId,
-                version = 0,
             )
         }
 
@@ -202,7 +200,6 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
         barcode: String,
         categoryId: UUID,
         supplierId: UUID,
-        version: Long
     ): Either<ProductApiError, Unit> {
         val body = ProductUpdateApiDto(
             commandId,
@@ -229,7 +226,6 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
                 barcode = body.barcode,
                 categoryId = body.categoryId,
                 supplierId = body.supplierId,
-                version = 0,
             )
 
             _allProducts.removeIf { it.id == productApiDto.id }

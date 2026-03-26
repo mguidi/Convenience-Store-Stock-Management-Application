@@ -62,7 +62,7 @@ class ProductAddUseCaseImpl(
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
-            version = 0
+            synced = false
         )
 
         return productRepository.insert(product)

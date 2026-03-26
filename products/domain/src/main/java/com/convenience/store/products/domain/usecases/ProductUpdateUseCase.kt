@@ -64,7 +64,7 @@ class ProductUpdateUseCaseImpl(
             barcode = barcode,
             categoryId = categoryId,
             supplierId = supplierId,
-            version = version + 1
+            synced = false
         )
 
         return productRepository.update(product)

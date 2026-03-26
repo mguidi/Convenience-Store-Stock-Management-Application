@@ -12,10 +12,12 @@ import com.convenience.store.core.data.models.EventLogOffsetDto
 import com.convenience.store.core.domain.events.ProductCreateEvent
 import com.convenience.store.core.domain.events.ProductDeleteEvent
 import com.convenience.store.core.domain.events.ProductUpdateEvent
+import com.convenience.store.products.data.datasources.local.ProductDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.events.ProductCreateEventDto
 import com.convenience.store.products.data.models.events.ProductDeleteEventDto
 import com.convenience.store.products.data.models.events.ProductUpdateEventDto
+import com.convenience.store.products.data.models.local.ProductDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -30,6 +32,7 @@ class ProductSyncWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val database: RoomDatabase,
     private val eventLogDao: EventLogDao,
+    private val productDao: ProductDao,
     private val eventLogOffsetDao: EventLogOffsetDao,
     private val productApiService: ProductApiService
 ) : CoroutineWorker(appContext, workerParams) {
@@ -63,13 +66,24 @@ class ProductSyncWorker @AssistedInject constructor(
                         barcode = data.barcode,
                         categoryId = data.categoryId,
                         supplierId = data.supplierId,
-                        version = 0,
                     )
                     //endregion
 
                     //region on success update of the last processed event id
                     result.onRight {
                         database.withTransaction {
+                            productDao.insertOrUpdate(
+                                ProductDto(
+                                    id = data.id,
+                                    name = data.name,
+                                    description = data.description,
+                                    price = data.price,
+                                    barcode = data.barcode,
+                                    categoryId = data.categoryId,
+                                    supplierId = data.supplierId,
+                                    synced = true
+                                )
+                            )
                             eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
                         }
                     }
@@ -88,13 +102,24 @@ class ProductSyncWorker @AssistedInject constructor(
                         barcode = data.barcode,
                         categoryId = data.categoryId,
                         supplierId = data.supplierId,
-                        version = 0,
                     )
                     //endregion
 
                     //region on success update of the last processed event id
                     result.onRight {
                         database.withTransaction {
+                            productDao.insertOrUpdate(
+                                ProductDto(
+                                    id = data.id,
+                                    name = data.name,
+                                    description = data.description,
+                                    price = data.price,
+                                    barcode = data.barcode,
+                                    categoryId = data.categoryId,
+                                    supplierId = data.supplierId,
+                                    synced = true
+                                )
+                            )
                             eventLogOffsetDao.insertOrUpdate(EventLogOffsetDto(CONSUMER, event.id))
                         }
                     }
