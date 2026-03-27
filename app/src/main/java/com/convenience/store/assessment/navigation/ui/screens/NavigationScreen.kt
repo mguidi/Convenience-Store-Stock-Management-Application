@@ -2,9 +2,7 @@ package com.convenience.store.assessment.navigation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +23,7 @@ import com.convenience.store.authentication.ui.screens.AuthenticationScreen
 import com.convenience.store.products.ui.screens.ProductCreateScreen
 import com.convenience.store.products.ui.screens.ProductEditScreen
 import com.convenience.store.products.ui.screens.ProductsScreen
+import com.convenience.store.scanner.ui.screens.BarcodeScannerWithOverlay
 import com.convenience.store.stocks.ui.screens.StockManagementScreen
 
 @Composable
@@ -128,20 +127,12 @@ fun NavigationScreen() {
 
                 is Screens.ScannerScreen -> NavEntry(key) {
                     MainScreen(backStack) { _ ->
-                        // TODO add scanner screen from module scanner
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Button(
-                                modifier = Modifier.align(Alignment.Center),
-                                onClick = {
-                                    resultFromScanner = "prova2"
-                                    backStack.removeAt(backStack.size - 1)
-                                }) {
-                                Text("Scanner")
+                        BarcodeScannerWithOverlay(
+                            onBarcodeDetected = { barcode ->
+                                resultFromScanner = barcode
+                                backStack.removeAt(backStack.size - 1)
                             }
-                        }
+                        )
                     }
                 }
             }

@@ -36,7 +36,7 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE barcode = :barcode")
     fun getProductByBarcode(barcode: String): Flow<ProductDto?>
 
-    @Query("SELECT * FROM products WHERE (:categoryId IS NULL OR categoryId = :categoryId) AND (:barcode IS NULL OR barcode LIKE :barcode || '%') ORDER by id ASC")
+    @Query("SELECT * FROM products WHERE (:categoryId IS NULL OR categoryId = :categoryId) AND (:barcode IS NULL OR barcode = :barcode) ORDER by id ASC")
     fun getProductsPaged(categoryId: UUID?, barcode: String?): PagingSource<Int, ProductDto>
 
 }

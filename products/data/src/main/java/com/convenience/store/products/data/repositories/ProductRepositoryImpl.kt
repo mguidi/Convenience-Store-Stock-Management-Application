@@ -186,10 +186,7 @@ class ProductRepositoryImpl @Inject constructor(
                 categoryId = categoryId,
                 barcode = barcode
             ),
-            pagingSourceFactory = {
-                val paged = productDao.getProductsPaged(categoryId, barcode)
-                paged
-            }
+            pagingSourceFactory = { productDao.getProductsPaged(categoryId, barcode) }
         ).flow
             .map { pagingData ->
                 pagingData.map { entity -> entity.toDomain() }

@@ -272,14 +272,12 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
     ): Either<ProductApiError, List<ProductApiDto>> {
         Log.d(
             "ProductApiService",
-            "getProductsByCategoryId: categoryId = $categoryId, page = $page, pageSize = $pageSize"
+            "getProducts: categoryId = $categoryId, barcode = $barcode, page = $page, pageSize = $pageSize"
         )
         delay(1000)
 
         val filteredProducts = _allProducts.filter {
-            (categoryId == null || it.categoryId == categoryId) && (barcode == null || it.barcode.startsWith(
-                barcode
-            ))
+            (categoryId == null || it.categoryId == categoryId) && (barcode == null || it.barcode == barcode)
         }
 
         val start = (page - 1) * pageSize

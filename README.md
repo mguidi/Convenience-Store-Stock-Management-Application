@@ -42,6 +42,7 @@
 - Stocks
   - Add stocks
   - Remove stocks
+- Scanner
 - Dashboard
 
 ## Architecture Overview

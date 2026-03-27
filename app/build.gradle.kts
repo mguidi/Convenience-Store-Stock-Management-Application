@@ -61,6 +61,8 @@ dependencies {
     implementation(project(":suppliers:domain"))
     implementation(project(":suppliers:data"))
 
+    implementation(project(":scanner:ui"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
