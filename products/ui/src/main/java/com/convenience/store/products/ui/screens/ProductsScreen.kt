@@ -51,6 +51,7 @@ import com.convenience.store.core.ui.R as coreR
 @Composable
 fun ProductsScreen(
     barcode: String?,
+    onBarcodeProcessed: () -> Unit,
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
     onScanClick: () -> Unit,
@@ -68,6 +69,7 @@ fun ProductsScreen(
                 replace(0, length, barcode)
                 placeCursorAtEnd()
             }
+            onBarcodeProcessed()
         }
     }
     var showFilters by remember { mutableStateOf(false) }

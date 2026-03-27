@@ -78,6 +78,9 @@ fun NavigationScreen() {
                     MainScreen(backStack) { onMenuClick ->
                         ProductsScreen(
                             barcode = resultFromScanner,
+                            onBarcodeProcessed = {
+                                resultFromScanner = null
+                            },
                             onMenuClick = onMenuClick,
                             onAddClick = { backStack.add(Screens.ProductCreateScreen) },
                             onScanClick = { backStack.add(Screens.ScannerScreen) },
