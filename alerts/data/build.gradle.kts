@@ -1,9 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.convenience.store.alerts.core"
+    namespace = "com.convenience.store.alerts.data"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -33,4 +36,16 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:data"))
+    implementation(project(":stocks:data"))
+    implementation(project(":alerts:domain"))
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 }

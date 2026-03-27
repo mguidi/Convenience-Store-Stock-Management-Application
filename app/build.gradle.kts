@@ -61,6 +61,9 @@ dependencies {
     implementation(project(":suppliers:domain"))
     implementation(project(":suppliers:data"))
 
+    implementation(project(":alerts:domain"))
+    implementation(project(":alerts:data"))
+
     implementation(project(":scanner:ui"))
 
 

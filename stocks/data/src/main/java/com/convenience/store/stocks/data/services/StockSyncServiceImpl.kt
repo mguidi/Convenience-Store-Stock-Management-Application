@@ -28,7 +28,7 @@ class StockSyncServiceImpl @Inject constructor(
             .build()
 
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "stock_sync",
+            StockSyncWorker.CONSUMER,
             ExistingWorkPolicy.APPEND_OR_REPLACE,
             syncRequest
         )

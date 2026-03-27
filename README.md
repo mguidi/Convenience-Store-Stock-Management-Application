@@ -43,7 +43,7 @@
   - Add stocks
   - Remove stocks
 - Scanner
-- Dashboard
+- Alerts
 
 ## Architecture Overview
 

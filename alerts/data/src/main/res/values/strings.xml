@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="alerts_channel_stock_alerts">Stock alerts</string>
+    <string name="alerts_channel_stock_alerts_description">"Notifications for stock alerts"</string>
+    <string name="alerts_title_stock_alert">"Stock alert"</string>
+    <string name="alerts_msg_stock_alert">"Product %s is running low. Quantity %s"</string>
+</resources>

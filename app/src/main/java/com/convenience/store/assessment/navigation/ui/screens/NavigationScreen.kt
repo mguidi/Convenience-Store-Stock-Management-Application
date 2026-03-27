@@ -44,8 +44,8 @@ fun NavigationScreen() {
 
                 // replace splashScreen with the target screen
                 if (backStack.lastOrNull() != targetScreen) {
-                    backStack.clear()
                     backStack.add(targetScreen)
+                    backStack.removeAt(0)
                 }
             }
 

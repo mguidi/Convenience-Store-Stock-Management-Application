@@ -8,12 +8,12 @@ import java.math.BigDecimal
 import java.util.UUID
 
 @Serializable
-internal data class StockRemoveEventDto(
+data class StockRemoveEventDto(
     @Serializable(with = UuidSerializer::class) val productId: UUID,
     @Serializable(with = BigDecimalSerializer::class) val quantityChange: BigDecimal,
 )
 
-internal fun StockRemoveEvent.toDto() = StockRemoveEventDto(
+fun StockRemoveEvent.toDto() = StockRemoveEventDto(
     productId = productId,
     quantityChange = quantity
 )
