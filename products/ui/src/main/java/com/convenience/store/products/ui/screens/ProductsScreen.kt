@@ -1,45 +1,35 @@
 package com.convenience.store.products.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
@@ -60,8 +50,10 @@ import com.convenience.store.core.ui.R as coreR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsScreen(
+    barcode: String?,
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
+    onScanClick: () -> Unit,
     onProductClick: (Product) -> Unit,
     onProductLongClick: (Product) -> Unit
 ) {
@@ -70,9 +62,18 @@ fun ProductsScreen(
     val categories by viewModel.categories.collectAsStateWithLifecycle(emptyList())
     val selectedCategoryId by viewModel.selectedCategoryId.collectAsStateWithLifecycle()
 
+    LaunchedEffect(barcode) {
+        if (barcode != null) {
+            viewModel.barcodeState.edit {
+                replace(0, length, barcode)
+                placeCursorAtEnd()
+            }
+        }
+    }
     var showFilters by remember { mutableStateOf(false) }
 
     ProductsScreenInt(
+        barcodeState = viewModel.barcodeState,
         pagingItems = pagingItems,
         categories = categories,
         selectedCategoryId = selectedCategoryId,
@@ -81,6 +82,7 @@ fun ProductsScreen(
         onCategorySelected = viewModel::onCategorySelected,
         onMenuClick = onMenuClick,
         onAddClick = onAddClick,
+        onScanClick = onScanClick,
         onProductClick = onProductClick,
         onProductLongClick = onProductLongClick
     )
@@ -89,6 +91,7 @@ fun ProductsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductsScreenInt(
+    barcodeState: TextFieldState,
     pagingItems: LazyPagingItems<Product>,
     categories: List<Category>,
     selectedCategoryId: UUID?,
@@ -97,6 +100,7 @@ internal fun ProductsScreenInt(
     onCategorySelected: (UUID?) -> Unit,
     onMenuClick: () -> Unit,
     onAddClick: () -> Unit,
+    onScanClick: () -> Unit,
     onProductClick: (Product) -> Unit,
     onProductLongClick: (Product) -> Unit
 ) {
@@ -120,6 +124,12 @@ internal fun ProductsScreenInt(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onScanClick) {
+                        Icon(
+                            Icons.Default.QrCodeScanner,
+                            contentDescription = stringResource(coreR.string.core_action_scan)
+                        )
+                    }
                     IconButton(onClick = { onShowFiltersChange(true) }) {
                         Icon(
                             Icons.Default.Search,
@@ -160,7 +170,8 @@ internal fun ProductsScreenInt(
                     onDismissRequest = { onShowFiltersChange(false) },
                     sheetState = sheetState
                 ) {
-                    FilterContent(
+                    FilterScreen(
+                        barcodeState = barcodeState,
                         categories = categories,
                         selectedCategoryId = selectedCategoryId,
                         onCategorySelected = {
@@ -185,103 +196,18 @@ internal fun ProductsScreenInt(
     }
 }
 
-@Composable
-private fun FilterContent(
-    categories: List<Category>,
-    selectedCategoryId: UUID?,
-    onCategorySelected: (UUID?) -> Unit,
-    onClose: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(R.string.products_filters),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(onClick = onClose) {
-                Icon(Icons.Default.Close, contentDescription = null)
-            }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(R.string.products_filter_by_category),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyColumn {
-            item {
-                CategoryFilterItem(
-                    name = stringResource(R.string.products_all_categories),
-                    isSelected = selectedCategoryId == null,
-                    onClick = { onCategorySelected(null) }
-                )
-            }
-            items(categories) { category ->
-                CategoryFilterItem(
-                    name = category.name,
-                    isSelected = category.id == selectedCategoryId,
-                    onClick = { onCategorySelected(category.id) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-    }
-}
-
-@Composable
-private fun CategoryFilterItem(
-    name: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp)
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = onClick
-        )
-        Text(
-            text = name,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-        if (isSelected) {
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                Icons.Default.Check,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "Phone", device = "spec:width=360dp,height=800dp,dpi=411")
+@Preview(
+    showBackground = true,
+    name = "Phone",
+    device = "spec:width=360dp,height=800dp,dpi=411"
+)
 @Composable
 fun ProductsScreenCompactPreview() {
     val pagingItems = getSamplePagingItems()
     MaterialTheme {
         ProductsScreenInt(
+            barcodeState = TextFieldState(),
             pagingItems = pagingItems,
             categories = emptyList(),
             selectedCategoryId = null,
@@ -290,6 +216,7 @@ fun ProductsScreenCompactPreview() {
             onCategorySelected = {},
             onMenuClick = {},
             onAddClick = {},
+            onScanClick = {},
             onProductClick = {},
             onProductLongClick = {}
         )

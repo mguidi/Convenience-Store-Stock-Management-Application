@@ -16,8 +16,6 @@ import com.convenience.store.products.domain.usecases.ProductGetUseCase
 import com.convenience.store.products.domain.usecases.ProductGetUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductUpdateUseCase
 import com.convenience.store.products.domain.usecases.ProductUpdateUseCaseImpl
-import com.convenience.store.products.domain.usecases.ProductsGetByCategoryUseCase
-import com.convenience.store.products.domain.usecases.ProductsGetByCategoryUseCaseImpl
 import com.convenience.store.products.domain.usecases.ProductsGetUseCase
 import com.convenience.store.products.domain.usecases.ProductsGetUseCaseImpl
 import com.convenience.store.suppliers.domain.repositories.SupplierRepository
@@ -94,14 +92,6 @@ object ProductsUiModule {
         productRepository: ProductRepository
     ): ProductGetUseCase {
         return ProductGetUseCaseImpl(productRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideProductsGetsByCategoryUseCase(
-        productRepository: ProductRepository
-    ): ProductsGetByCategoryUseCase {
-        return ProductsGetByCategoryUseCaseImpl(productRepository)
     }
 
     @Provides

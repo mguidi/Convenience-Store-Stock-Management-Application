@@ -13,4 +13,6 @@ sealed interface Screens {
 
     data class StockManagementScreen(val productId: UUID, val productName: String) : Screens
 
+    data object ScannerScreen : Screens
+
 }

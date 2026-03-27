@@ -19,7 +19,5 @@ interface ProductRepository {
 
     fun getProductByBarcode(barcode: String): Flow<Product?>
 
-    fun getProducts(): Flow<PagingData<Product>>
-
-    fun getProductsByCategory(categoryId: UUID): Flow<PagingData<Product>>
+    fun getProducts(categoryId: UUID?, barcode: String?): Flow<PagingData<Product>>
 }

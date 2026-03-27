@@ -20,7 +20,8 @@ class ProductRemoteMediator(
     private val database: RoomDatabase,
     private val productDao: ProductDao,
     private val productApiService: ProductApiService,
-    private val categoryId: UUID? = null
+    private val categoryId: UUID? = null,
+    private val barcode: String? = null
 ) : RemoteMediator<Int, ProductDto>() {
 
     companion object {
@@ -50,15 +51,22 @@ class ProductRemoteMediator(
         }
 
         return try {
-            val response = if (categoryId == null) {
-                productApiService.getProducts(page = page, pageSize = state.config.pageSize)
-            } else {
-                productApiService.getProductsByCategoryId(
-                    categoryId,
-                    page = page,
-                    pageSize = state.config.pageSize
-                )
-            }
+//            val response = if (categoryId == null) {
+//                productApiService.getProducts(page = page, pageSize = state.config.pageSize)
+//            } else {
+//                productApiService.getProductsByCategoryId(
+//                    categoryId,
+//                    page = page,
+//                    pageSize = state.config.pageSize
+//                )
+//            }
+
+            val response = productApiService.getProducts(
+                categoryId,
+                barcode,
+                page = page,
+                pageSize = state.config.pageSize
+            )
 
             response.fold(
                 { MediatorResult.Error(Exception("API Error")) },

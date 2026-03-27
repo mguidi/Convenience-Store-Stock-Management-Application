@@ -2,12 +2,16 @@ package com.convenience.store.assessment.navigation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -28,6 +32,7 @@ fun NavigationScreen() {
     val backStack = remember { mutableStateListOf<Screens>(Screens.SplashScreen) }
     val viewModel = hiltViewModel<NavigationViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var resultFromScanner by remember { mutableStateOf<String?>(null) }
 
     // handle navigation base on the uiState
     LaunchedEffect(uiState) {
@@ -73,8 +78,10 @@ fun NavigationScreen() {
                 is Screens.ProductsScreen -> NavEntry(key) {
                     MainScreen(backStack) { onMenuClick ->
                         ProductsScreen(
+                            barcode = resultFromScanner,
                             onMenuClick = onMenuClick,
                             onAddClick = { backStack.add(Screens.ProductCreateScreen) },
+                            onScanClick = { backStack.add(Screens.ScannerScreen) },
                             onProductClick = {
                                 backStack.add(
                                     Screens.StockManagementScreen(
@@ -116,6 +123,25 @@ fun NavigationScreen() {
                             key.productName,
                             onBackClick = { backStack.removeAt(backStack.size - 1) },
                         )
+                    }
+                }
+
+                is Screens.ScannerScreen -> NavEntry(key) {
+                    MainScreen(backStack) { _ ->
+                        // TODO add scanner screen from module scanner
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Button(
+                                modifier = Modifier.align(Alignment.Center),
+                                onClick = {
+                                    resultFromScanner = "prova2"
+                                    backStack.removeAt(backStack.size - 1)
+                                }) {
+                                Text("Scanner")
+                            }
+                        }
                     }
                 }
             }

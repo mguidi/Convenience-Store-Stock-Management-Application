@@ -23,6 +23,7 @@
     <string name="products_errors_already_exists">Product already exists</string>
     <string name="products_errors_not_exists">Product not exists</string>
     <string name="products_filters">Filters</string>
+    <string name="products_filter_by_barcode">Filter by Barcode</string>
     <string name="products_filter_by_category">Filter by Category</string>
     <string name="products_all_categories">All Categories</string>
     <string name="products_apply_filters">Apply Filters</string>

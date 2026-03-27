@@ -147,7 +147,8 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
             supplierId = UUID.fromString(_supplierIds[(i - 1) % _supplierIds.size]),
         )
     }.toMutableList()
-//    private val _allProducts = emptyList<ProductApiDto>().toMutableList()
+
+    //    private val _allProducts = emptyList<ProductApiDto>().toMutableList()
     private val _mutex = Mutex()
 
     override suspend fun createProduct(
@@ -264,27 +265,8 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
     }
 
     override suspend fun getProducts(
-        page: Int,
-        pageSize: Int
-    ): Either<ProductApiError, List<ProductApiDto>> {
-        Log.d(
-            "ProductApiService",
-            "getProducts: page = $page, pageSize = $pageSize"
-        )
-        delay(1000)
-
-        val start = (page - 1) * pageSize
-        val end = (start + pageSize).coerceAtMost(_allProducts.size)
-
-        return if (start < _allProducts.size) {
-            _allProducts.subList(start, end).right()
-        } else {
-            emptyList<ProductApiDto>().right()
-        }
-    }
-
-    override suspend fun getProductsByCategoryId(
-        categoryId: UUID,
+        categoryId: UUID?,
+        barcode: String?,
         page: Int,
         pageSize: Int
     ): Either<ProductApiError, List<ProductApiDto>> {
@@ -294,13 +276,17 @@ class ProductApiServiceMockImpl @Inject constructor() : ProductApiService {
         )
         delay(1000)
 
-        val allProductsByCategoryId = _allProducts.filter { it.categoryId == categoryId }
+        val filteredProducts = _allProducts.filter {
+            (categoryId == null || it.categoryId == categoryId) && (barcode == null || it.barcode.startsWith(
+                barcode
+            ))
+        }
 
         val start = (page - 1) * pageSize
-        val end = (start + pageSize).coerceAtMost(allProductsByCategoryId.size)
+        val end = (start + pageSize).coerceAtMost(filteredProducts.size)
 
-        return if (start < allProductsByCategoryId.size) {
-            allProductsByCategoryId.subList(start, end).right()
+        return if (start < filteredProducts.size) {
+            filteredProducts.subList(start, end).right()
         } else {
             emptyList<ProductApiDto>().right()
         }

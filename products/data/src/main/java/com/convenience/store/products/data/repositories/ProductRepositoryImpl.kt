@@ -19,7 +19,6 @@ import com.convenience.store.core.domain.events.ProductDeleteEvent
 import com.convenience.store.core.domain.events.ProductUpdateEvent
 import com.convenience.store.core.domain.services.UuidService
 import com.convenience.store.products.data.datasources.local.ProductDao
-import com.convenience.store.products.data.datasources.local.ProductRemoteKeyDao
 import com.convenience.store.products.data.datasources.remote.ProductApiService
 import com.convenience.store.products.data.models.events.toDto
 import com.convenience.store.products.data.models.local.toDomain
@@ -172,28 +171,7 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getProducts(): Flow<PagingData<Product>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false,
-                prefetchDistance = 2
-            ),
-            remoteMediator = ProductRemoteMediator(
-                context = context,
-                database = database,
-                productDao = productDao,
-                productApiService = productApiService
-            ),
-            pagingSourceFactory = { productDao.getProductsPaged() }
-        ).flow
-            .map { pagingData ->
-                pagingData.map { entity -> entity.toDomain() }
-            }
-    }
-
-    @OptIn(ExperimentalPagingApi::class)
-    override fun getProductsByCategory(categoryId: UUID): Flow<PagingData<Product>> {
+    override fun getProducts(categoryId: UUID?, barcode: String?): Flow<PagingData<Product>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
@@ -205,9 +183,13 @@ class ProductRepositoryImpl @Inject constructor(
                 database = database,
                 productDao = productDao,
                 productApiService = productApiService,
-                categoryId = categoryId
+                categoryId = categoryId,
+                barcode = barcode
             ),
-            pagingSourceFactory = { productDao.getProductsByCategoryPaged(categoryId) }
+            pagingSourceFactory = {
+                val paged = productDao.getProductsPaged(categoryId, barcode)
+                paged
+            }
         ).flow
             .map { pagingData ->
                 pagingData.map { entity -> entity.toDomain() }

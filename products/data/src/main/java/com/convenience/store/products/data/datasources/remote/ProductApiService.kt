@@ -34,10 +34,9 @@ interface ProductApiService {
 
     suspend fun getProductById(id: UUID): Either<ProductApiError, ProductApiDto>
 
-    suspend fun getProducts(page: Int, pageSize: Int): Either<ProductApiError, List<ProductApiDto>>
-
-    suspend fun getProductsByCategoryId(
-        categoryId: UUID,
+    suspend fun getProducts(
+        categoryId: UUID?,
+        barcode: String?,
         page: Int,
         pageSize: Int
     ): Either<ProductApiError, List<ProductApiDto>>
