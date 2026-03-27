@@ -24,6 +24,7 @@ import com.convenience.store.products.ui.screens.ProductCreateScreen
 import com.convenience.store.products.ui.screens.ProductEditScreen
 import com.convenience.store.products.ui.screens.ProductsScreen
 import com.convenience.store.scanner.ui.screens.BarcodeScannerWithOverlay
+import com.convenience.store.scanner.ui.screens.CameraPermissionWrapper
 import com.convenience.store.stocks.ui.screens.StockManagementScreen
 
 @Composable
@@ -130,7 +131,7 @@ fun NavigationScreen() {
 
                 is Screens.ScannerScreen -> NavEntry(key) {
                     MainScreen(backStack) { _ ->
-                        BarcodeScannerWithOverlay(
+                        CameraPermissionWrapper(
                             onBarcodeDetected = { barcode ->
                                 resultFromScanner = barcode
                                 backStack.removeAt(backStack.size - 1)

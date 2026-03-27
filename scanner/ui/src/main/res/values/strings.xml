@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="scanner_permission">Camera is required to scan code</string>
+    <string name="scanner_grant_permission">Grant permission</string>
+</resources>

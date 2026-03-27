@@ -36,6 +36,7 @@ fun MainScreen(
         else -> null
     }
 
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -64,8 +65,12 @@ fun MainScreen(
             }
         }
     ) {
-        content {
-            scope.launch { drawerState.open() }
+
+        NotificationPermissionWrapper {
+            content {
+                scope.launch { drawerState.open() }
+            }
         }
+
     }
 }
